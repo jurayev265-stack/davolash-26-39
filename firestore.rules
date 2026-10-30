@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.email == 'jurayev265@gmail.com'; }
+    function approved() {
+      return isAdmin() || (signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.approved == true);
+    }
+
+    // Foydalanuvchilar: o'zi yaratadi (tasdiqsiz), faqat admin tasdiqlaydi
+    match /users/{uid} {
+      allow read: if approved() || (signedIn() && request.auth.uid == uid);
+      allow create: if signedIn() && request.auth.uid == uid
+        && (request.resource.data.approved == false || isAdmin());
+      allow update: if isAdmin()
+        || (signedIn() && request.auth.uid == uid && request.resource.data.approved == resource.data.approved);
+      allow delete: if isAdmin();
+    }
+
+    // Kursdoshlar ro'yxati (manzil, telefon): faqat tasdiqlanganlar o'qiydi, faqat admin yozadi
+    match /students/{id} {
+      allow read: if approved();
+      allow write: if isAdmin();
+    }
+
+    // Uyga vazifa va test savollari: tasdiqlanganlar qo'shadi, muallif yoki admin o'chiradi
+    match /homework/{id} {
+      allow read: if approved();
+      allow create: if approved() && request.resource.data.author == request.auth.uid;
+      allow update, delete: if isAdmin() || (approved() && resource.data.author == request.auth.uid);
+    }
+    match /questions/{id} {
+      allow read: if approved();
+      allow create: if approved() && request.resource.data.author == request.auth.uid;
+      allow update, delete: if isAdmin() || (approved() && resource.data.author == request.auth.uid);
+    }
+
+    // Darsliklar: hamma tasdiqlangan o'qiydi, faqat admin qo'shadi
+    match /materials/{id} {
+      allow read: if approved();
+      allow write: if isAdmin();
+    }
+
+    // Reyting: har kim faqat o'z balini yozadi
+    match /scores/{uid} {
+      allow read: if approved();
+      allow write: if approved() && request.auth.uid == uid;
+    }
+  }
+}

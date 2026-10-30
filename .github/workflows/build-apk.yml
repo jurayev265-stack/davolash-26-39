@@ -1,0 +1,67 @@
+name: APK yig'ish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Kutubxonalarni o'rnatish
+        run: npm install
+
+      - name: Android loyihasini yaratish
+        run: npx cap add android
+
+      - name: Ikonka va eslatma belgisi
+        run: |
+          RES=android/app/src/main/res
+          rm -rf $RES/mipmap-anydpi-v26
+          for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            cp icons/$d.png $RES/mipmap-$d/ic_launcher.png
+            cp icons/$d.png $RES/mipmap-$d/ic_launcher_round.png
+          done
+          mkdir -p $RES/drawable
+          cat > $RES/drawable/ic_stat_icon.xml <<'XML'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+            <path android:fillColor="#FFFFFFFF" android:pathData="M10.5,4h3v6.5H20v3h-6.5V20h-3v-6.5H4v-3h6.5z"/>
+          </vector>
+          XML
+          sed -i 's/^          //' $RES/drawable/ic_stat_icon.xml
+
+      - name: Sinxronlash
+        run: npx cap sync android
+
+      - name: Doimiy imzo kaliti (yangilanishlar ustidan o'rnatilishi uchun)
+        run: mkdir -p ~/.android && cp keystore/debug.keystore ~/.android/debug.keystore
+
+      - name: APK yig'ish
+        run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+
+      - name: Faylni nomlash
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Davolash-26-39.apk
+
+      - name: Yuklab olish uchun e'lon qilish
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Davolash 26-39 · ${{ github.run_number }}-versiya
+          body: Telefonga yuklab oling va o'rnating. Eski versiya ustidan o'rnatsa bo'ladi.
+          files: Davolash-26-39.apk
+          make_latest: true

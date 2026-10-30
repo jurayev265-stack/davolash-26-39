@@ -1,0 +1,9 @@
+{
+  "appId": "uz.davolash2639.app",
+  "appName": "Davolash 26-39",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "plugins": {
+    "LocalNotifications": { "smallIcon": "ic_stat_icon", "iconColor": "#C42847" }
+  }
+}
