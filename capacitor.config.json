@@ -2,7 +2,11 @@
   "appId": "uz.davolash2639.app",
   "appName": "Davolash 26-39",
   "webDir": "www",
-  "server": { "androidScheme": "https" },
+  "server": {
+    "url": "https://jurayev265-stack.github.io/davolash-26-39/",
+    "androidScheme": "https",
+    "errorPath": "offline.html"
+  },
   "plugins": {
     "LocalNotifications": { "smallIcon": "ic_stat_icon", "iconColor": "#C42847" }
   }
