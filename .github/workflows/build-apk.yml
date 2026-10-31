@@ -3,6 +3,9 @@ name: APK yig'ish
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "files/**"
+      - "*.md"
   workflow_dispatch:
 
 permissions:

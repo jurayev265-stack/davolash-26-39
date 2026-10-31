@@ -8,18 +8,31 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: pages-publish
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: www papkasini gh-pages tarmog'iga joylash
+      - name: gh-pages tarmog'ini yangilash (www + shifrlangan darsliklar)
         run: |
-          cd www
-          touch .nojekyll
-          git init -q -b gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          URL="https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads "$URL" gh-pages >/dev/null; then
+            git clone --depth 1 --branch gh-pages "$URL" site
+          else
+            mkdir site && cd site && git init -q -b gh-pages && git remote add origin "$URL" && cd ..
+          fi
+          find site -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r www/. site/
+          if [ -d files ]; then cp -r files site/files; fi
+          touch site/.nojekyll
+          cd site
           git add -A
-          git commit -q -m "Veb versiya ${GITHUB_SHA::7}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          git commit -q -m "Veb versiya ${GITHUB_SHA::7}" || { echo "O'zgarish yo'q"; exit 0; }
+          git push origin gh-pages
