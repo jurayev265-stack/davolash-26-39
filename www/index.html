@@ -8,6 +8,8 @@
 <meta name="theme-color" content="#C42847">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon.png">
+<script>try{var lu=JSON.parse(localStorage.getItem("d2639:lastuid"));if(lu&&JSON.parse(localStorage.getItem("d2639:pin:"+lu)))document.documentElement.className+=" locked";}catch(e){}</script>
+<style>html.locked body>header,html.locked body>main,html.locked body>nav{visibility:hidden}</style>
 <title>Davolash 26-39</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,600;1,400;1,500&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
@@ -1171,7 +1173,7 @@ async function bioVerify(enroll) {
 }
 async function bioUnlock() { if (PIN.mode !== "unlock") return; if (await bioVerify()) { PIN.tries = 0; pinClose(); } }
 function pinOpen(mode) { PIN.mode = mode; PIN.buf = ""; if (mode !== "confirm") PIN.first = ""; pinBox.hidden = false; pinDraw(); }
-function pinClose() { if (PIN.uid && ["unlock", "confirm", "askbio"].includes(PIN.mode) && pinStored(PIN.uid)) PIN.unlockedUid = PIN.uid; pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
+function pinClose() { document.documentElement.classList.remove("locked"); if (PIN.uid && ["unlock", "confirm", "askbio"].includes(PIN.mode) && pinStored(PIN.uid)) PIN.unlockedUid = PIN.uid; pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
 function pinDraw(msg, bad) {
   const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
   const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
