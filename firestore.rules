@@ -38,7 +38,7 @@ service cloud.firestore {
     }
 
     // Darsliklar: hamma tasdiqlangan o'qiydi, faqat admin qo'shadi
-    match /materials/{id} {
+    match /materials/{doc=**} {
       allow read: if approved();
       allow write: if isAdmin();
     }

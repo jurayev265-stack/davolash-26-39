@@ -253,6 +253,9 @@ nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 .file .t{flex:1;min-width:0}
 .file .t div{font-weight:800;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .file .t small{font-size:12px;color:var(--muted)}
+.fileinp{padding:10px!important;background:var(--surface-2)}
+.orline{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12.5px;font-weight:700;margin:2px 0 10px}
+.orline:before,.orline:after{content:"";flex:1;height:1px;background:var(--line)}
 .file .acts{display:flex;gap:6px;width:100%;padding-left:52px}
 form.compact{padding:14px;gap:10px}
 input[type=file]{font-size:13.5px;width:100%}
@@ -328,7 +331,7 @@ details.install ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc, updateDoc, onSnapshot, query, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc, updateDoc, onSnapshot, query, orderBy, limit, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const FIREBASE_CONFIG={"apiKey": "AIzaSyB4TG1L62RiCbjrDg_fbxVNBRH3U-RDXMg", "authDomain": "davolash-26-39.firebaseapp.com", "projectId": "davolash-26-39", "storageBucket": "davolash-26-39.firebasestorage.app", "messagingSenderId": "1078752734057", "appId": "1:1078752734057:web:203e089588cf02fe202bf8"};
 const ADMIN_EMAIL="jurayev265@gmail.com";
@@ -777,17 +780,18 @@ function viewSubject(key){
     <div class="sec"><div class="sec-h"><h2>Darsliklar · ${mats.length}</h2></div>
       <div class="card list">${mats.length?mats.map(m=>`<div class="file" style="--sc:${SC[key]}"><span class="fi">${extOf(m)}</span>
         <div class="t"><div>${esc(m.title)}</div><small>${m.kind==="link"?"Havola":esc(fmtSize(m.size))}</small></div>
-        <div class="acts"><a class="mini blue" href="${esc(m.url)}" target="_blank" rel="noopener">Ochish</a>
-        ${m.kind!=="link"&&S.downloads?`<button class="mini" data-dl="${esc(m.id)}">Yuklab olish</button>`:""}
+        <div class="acts">${m.kind==="file"?`<button class="mini blue" data-open="${esc(m.id)}">Ochish</button>`:`<a class="mini blue" href="${esc(m.url)}" target="_blank" rel="noopener">Ochish</a>`}
         ${S.isOwner?`<button class="mini red" data-delm="${esc(m.id)}">✕</button>`:""}</div></div>`).join("")
         :`<div class="empty">Hali darslik qo'shilmagan.</div>`}</div>
       ${S.isOwner&&S.db?`<form class="card compact" id="mf">
         <h2>Darslik qo'shish (admin)</h2>
         <label for="m-title">Nomi<input type="text" id="m-title" maxlength="140" placeholder="Masalan: Sapin. Odam anatomiyasi, 1-tom"></label>
+        <label for="m-file">Fayl biriktirish (PDF, PowerPoint, Word · 25 MB gacha)<input type="file" id="m-file" class="fileinp"></label>
+        <div class="orline"><span>yoki havola</span></div>
         <label for="m-link">Havola (Google Drive, Telegram)<input type="text" id="m-link" placeholder="https://..."></label>
         <button class="btn vein" type="submit" id="m-send">Qo'shish</button>
         <div class="formmsg" id="m-msg" role="status"></div>
-        <p class="lede" style="font-size:12.5px">Faylni (PDF, PowerPoint, Word, kitob) Google Drive'ga yuklang, "Ulashish → Havolasi bor har kim" qilib, havolasini shu yerga qo'ying.</p></form>`:""}
+        <p class="lede" style="font-size:12.5px">Fayl hamma kursdoshlarga ilova ichida ochiladi. 25 MB dan katta kitoblarni Google Drive yoki Telegram'ga yuklab, havolasini qo'ying.</p></form>`:""}
     </div>`;
   const hwf=$("#hwf");
   if(hwf){
@@ -804,27 +808,25 @@ function viewSubject(key){
   }
   document.querySelectorAll("[data-delhw]").forEach(b=>confirmBtn(b,async()=>S.db.doc("homework/"+b.dataset.delhw).delete()));
   document.querySelectorAll("[data-delm]").forEach(b=>confirmBtn(b,async()=>{ const m=S.materials.find(x=>x.id===b.dataset.delm);
-    await S.db.doc("materials/"+b.dataset.delm).delete(); if(m&&m.assetId&&S.assets){ try{ await S.assets.delete(m.assetId); }catch(e){} } }));
-  document.querySelectorAll("[data-dl]").forEach(b=>b.onclick=async()=>{ const m=S.materials.find(x=>x.id===b.dataset.dl); if(!m) return;
-    b.disabled=true; b.textContent="…";
-    try{ const r=await fetch(m.url); const blob=await r.blob(); await S.downloads.save({filename:m.filename||m.title,data:blob}); b.textContent="Saqlandi"; }
-    catch(e){ b.textContent=e&&e.code==="declined"?"Bekor qilindi":"Xato"; }
-    setTimeout(()=>{b.disabled=false;b.textContent="Yuklab olish"},2500); });
+    if(m&&m.kind==="file"&&window.fileDelete){ await window.fileDelete(m); } else await S.db.doc("materials/"+b.dataset.delm).delete(); }));
+  document.querySelectorAll("[data-open]").forEach(b=>b.onclick=async()=>{ const m=S.materials.find(x=>x.id===b.dataset.open); if(!m||b.disabled) return;
+    b.disabled=true; b.textContent="Yuklanmoqda…";
+    try{ await window.fileOpen(m,f=>{ b.textContent="Yuklanmoqda "+Math.round(f*100)+"%"; }); b.textContent="Ochish"; b.disabled=false; }
+    catch(e){ console.error(e); b.textContent="Xato, qayta bosing"; setTimeout(()=>{b.disabled=false;b.textContent="Ochish"},3000); } });
   const mf=$("#mf");
   if(mf) mf.onsubmit=async e=>{ e.preventDefault(); const msg=$("#m-msg"); msg.className="formmsg";
     const title=$("#m-title").value.trim(); const fe=$("#m-file"); const file=fe&&fe.files[0]; const link=$("#m-link").value.trim();
     if(!title){msg.className="formmsg err";msg.textContent="Darslik nomini yozing.";return;}
     if(!file&&!/^https?:\/\//.test(link)){msg.className="formmsg err";msg.textContent="Fayl tanlang yoki https:// bilan boshlanadigan havola qo'ying.";return;}
-    if(file&&file.size>20*1048576){msg.className="formmsg err";msg.textContent="Fayl 20 MB dan katta. Uni Google Drive'ga yuklab, havolasini qo'ying.";return;}
+    if(file&&file.size>25*1048576){msg.className="formmsg err";msg.textContent="Fayl 25 MB dan katta. Uni Google Drive yoki Telegram'ga yuklab, havolasini qo'ying.";return;}
     $("#m-send").disabled=true; msg.textContent=file?"Yuklanmoqda…":"";
     try{ let doc;
-      if(file){ if(!S.assets) throw {code:"no_assets"}; const up=await S.assets.upload(file);
-        doc={subject:key,title,kind:"file",url:up.url,assetId:up.id,filename:file.name,size:up.sizeBytes,contentType:up.contentType}; }
-      else doc={subject:key,title,kind:"link",url:link};
-      await S.db.collection("materials").add({...doc,author:S.uid,createdAt:new Date().toISOString()});
+      if(file){ const up=await window.fileUpload(file,f=>{ msg.textContent="Yuklanmoqda… "+Math.round(f*100)+"%"; });
+        await window.fileSaveMeta(up.id,{subject:key,title,kind:"file",url:"file",filename:file.name,size:file.size,contentType:file.type||"",chunks:up.chunks,author:S.uid,createdAt:new Date().toISOString()}); }
+      else await S.db.collection("materials").add({subject:key,title,kind:"link",url:link,author:S.uid,createdAt:new Date().toISOString()});
       viewSubject(key); const m=$("#m-msg"); if(m){m.className="formmsg ok";m.textContent="Darslik qo'shildi.";}
     }catch(err){ $("#m-send").disabled=false; msg.className="formmsg err";
-      msg.textContent=err&&err.code==="unsupported_type"?"Bu turdagi faylni yuklab bo'lmaydi. PDF qilib saqlang yoki havola qo'ying.":err&&err.code==="too_large"?"Fayl juda katta. Havola qo'ying.":"Yuklab bo'lmadi. Qayta urinib ko'ring."; } };
+      msg.textContent=err&&err.code==="unsupported_type"?"Bu turdagi faylni yuklab bo'lmaydi. PDF qilib saqlang yoki havola qo'ying.":err&&err.code==="too_large"?"Fayl juda katta. Havola qo'ying.":"Yuklab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring."+(err&&err.code?` (kod: ${err.code})`:""); } };
 }
 function confirmBtn(b,fn){ let armed=false; const t=b.textContent;
   b.onclick=async()=>{ if(!armed){armed=true;b.textContent="Aniqmi?";setTimeout(()=>{armed=false;b.textContent=t},3000);return;}
@@ -988,6 +990,64 @@ function startData() {
   unsubs.push(onSnapshot(query(collection(fs, "scores"), orderBy("points", "desc"), limit(60)), s => { S.scores = s.docs.map(d => ({ id: d.id, ...d.data() })); if (route() === "reyting") viewBoard(); }, () => {}));
   render(); scheduleNotifs(true);
 }
+
+
+/* ---------- Fayllar: Firestore'da bo'laklab saqlash ---------- */
+const CHUNK = 700000;
+const toB64 = u8 => { let s = ""; for (let i = 0; i < u8.length; i += 32768) s += String.fromCharCode.apply(null, u8.subarray(i, i + 32768)); return btoa(s); };
+const fromB64 = b => { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; };
+const capPlug = n => { const C = window.Capacitor; return C && ((C.Plugins && C.Plugins[n]) || (C.registerPlugin && C.registerPlugin(n))); };
+const isNative = () => { const C = window.Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); };
+const MIME = { pdf: "application/pdf", ppt: "application/vnd.ms-powerpoint", pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation", doc: "application/msword", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", xls: "application/vnd.ms-excel", xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", txt: "text/plain", djvu: "image/vnd.djvu", epub: "application/epub+zip" };
+const mimeOf = m => m.contentType || MIME[(m.filename || "").split(".").pop().toLowerCase()] || "application/octet-stream";
+window.fileUpload = async (file, prog) => {
+  const buf = new Uint8Array(await file.arrayBuffer()); const n = Math.max(1, Math.ceil(buf.length / CHUNK));
+  const ref = doc(collection(fs, "materials"));
+  for (let i = 0; i < n; i++) {
+    await setDoc(doc(fs, `materials/${ref.id}/chunks/${String(i).padStart(4, "0")}`), { i, d: toB64(buf.subarray(i * CHUNK, (i + 1) * CHUNK)) });
+    prog && prog((i + 1) / n);
+  }
+  return { id: ref.id, chunks: n };
+};
+window.fileSaveMeta = (id, data) => setDoc(doc(fs, "materials/" + id), data);
+async function fetchChunks(m, prog) {
+  const snap = await getDocs(query(collection(fs, `materials/${m.id}/chunks`), orderBy("i")));
+  const out = snap.docs.map(d => d.data().d); prog && prog(1); return out;
+}
+window.fileDelete = async m => {
+  const snap = await getDocs(collection(fs, `materials/${m.id}/chunks`));
+  for (let i = 0; i < snap.docs.length; i += 400) { const b = writeBatch(fs); snap.docs.slice(i, i + 400).forEach(d => b.delete(d.ref)); await b.commit(); }
+  await deleteDoc(doc(fs, "materials/" + m.id));
+};
+window.fileOpen = async (m, prog) => {
+  const name = (m.filename || m.title || "fayl").replace(/[\\/:*?"<>|]+/g, "_");
+  const type = mimeOf(m);
+  if (isNative()) {
+    const FS = capPlug("Filesystem");
+    if (FS) {
+      const path = `darsliklar/${m.id}/${name}`; let have = false;
+      try { await FS.stat({ path, directory: "CACHE" }); have = true; } catch (e) {}
+      if (!have) {
+        const parts = await fetchChunks(m, prog); const tmp = `darsliklar/${m.id}/.yuklanmoqda`;
+        for (let i = 0; i < parts.length; i++) {
+          if (i === 0) await FS.writeFile({ path: tmp, data: parts[i], directory: "CACHE", recursive: true });
+          else await FS.appendFile({ path: tmp, data: parts[i], directory: "CACHE" });
+          prog && prog((i + 1) / parts.length);
+        }
+        await FS.rename({ from: tmp, to: path, directory: "CACHE", toDirectory: "CACHE" });
+      }
+      const { uri } = await FS.getUri({ path, directory: "CACHE" });
+      const FO = capPlug("FileOpener");
+      try { if (!FO) throw 0; await FO.open({ filePath: uri, contentType: type, openWithDefault: true }); return; }
+      catch (e) { const SH = capPlug("Share"); if (SH) { await SH.share({ title: m.title, files: [uri] }); return; } throw e; }
+    }
+  }
+  const parts = await fetchChunks(m, prog);
+  const blob = new Blob(parts.map(fromB64), { type });
+  const url = URL.createObjectURL(blob); const a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+};
 
 /* ---------- Admin: tasdiqlash va ma'lumotlarni yuklash ---------- */
 window.viewAdmin = function () {
