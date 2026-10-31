@@ -201,6 +201,9 @@ p{margin:0}
 .exitask{position:fixed;inset:0;z-index:80;background:rgba(10,15,20,.45);display:flex;align-items:flex-end;justify-content:center;padding:16px}
 .exit-card{width:100%;max-width:420px;background:var(--surface);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:16px;margin-bottom:env(safe-area-inset-bottom,0px)}
 .exit-card h2{font-size:19px;font-weight:800;text-transform:none;letter-spacing:0;color:var(--ink)}
+.bio-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:300px;color:var(--accent)}
+.bio-ic{color:var(--accent);margin:4px 0}
+.bio-ic svg{width:44px;height:44px}
 /* form */
 form{display:flex;flex-direction:column;gap:14px;padding:18px}
 label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:700}
@@ -939,7 +942,7 @@ function viewGroup(){
     <input class="search" type="search" id="g-q" placeholder="Ism, tuman yoki telefon bo'yicha qidirish" value="${esc(S.q)}" aria-label="Qidirish">
     <div class="sec"><h2>O'z uyidan qatnaydiganlar · ${home.length}</h2><div class="card list">${home.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
     <div class="sec"><h2>Ijarada turadiganlar · ${rent.length}</h2><div class="card list">${rent.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
-    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button><button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
+    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button>${window.appBioCan&&appBioCan()?`<button class="btn" onclick="appToggleBio()">Barmoq izi / yuz bilan kirish: ${appBioState()}</button><p class="lede" id="bio-note" style="font-size:12.5px"></p>`:""}<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ S.openSt=S.openSt===b.dataset.st?null:b.dataset.st; viewGroup(); });
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Nusxa olindi"; }catch(e){ b.textContent=b.dataset.copy; } });
   const g=$("#g-q"); g.oninput=()=>{ S.q=g.value; const pos=g.selectionStart; viewGroup(); const n=$("#g-q"); n.focus(); try{n.setSelectionRange(pos,pos)}catch(e){} };
@@ -1131,11 +1134,35 @@ const pinHash = async (uid, pin) => { const b = await crypto.subtle.digest("SHA-
   return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); };
 const PIN = { uid: null, mode: null, buf: "", first: "", tries: 0, hiddenAt: 0 };
 const pinStored = uid => store.get("pin:" + uid, null);
+/* Barmoq izi / yuz (faqat Android ilovada, NativeBiometric plagini bilan) */
+const BIO = { ok: null };
+const bioPlug = () => (typeof isNative === "function" && isNative()) ? capPlug("NativeBiometric") : null;
+async function bioAvailable() {
+  if (BIO.ok !== null) return BIO.ok;
+  const B = bioPlug(); if (!B) return (BIO.ok = false);
+  try { const r = await B.isAvailable(); BIO.ok = !!(r && r.isAvailable); } catch (e) { BIO.ok = false; }
+  return BIO.ok;
+}
+const bioOn = uid => !!store.get("bio:" + uid, false);
+async function bioVerify() {
+  const B = bioPlug(); if (!B) return false;
+  try { await B.verifyIdentity({ reason: "Ilovaga kirish", title: "Davolash 26-39", subtitle: "Barmoq izi yoki yuz bilan kirish", description: "", negativeButtonText: "PIN-kod bilan" }); return true; }
+  catch (e) { return false; }
+}
+async function bioUnlock() { if (PIN.mode !== "unlock") return; if (await bioVerify()) { PIN.tries = 0; pinClose(); } }
 function pinOpen(mode) { PIN.mode = mode; PIN.buf = ""; if (mode !== "confirm") PIN.first = ""; pinBox.hidden = false; pinDraw(); }
 function pinClose() { pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
 function pinDraw(msg, bad) {
   const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
   const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
+  if (PIN.mode === "askbio") {
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><div class="bio-ic">${BIO_SVG}</div><h2>Barmoq izi yoki yuz bilan ochilsinmi?</h2>
+      <p class="lede">Har safar PIN-kod terish o'rniga barmoq izingiz yoki yuzingiz bilan ochasiz. PIN-kod ham ishlayveradi.</p>
+      <button class="btn primary" id="bio-yes">Ha, yoqish</button><button class="btn ghost" id="bio-no">Keyinroq</button></div>`;
+    document.getElementById("bio-yes").onclick = async () => { if (await bioVerify()) { store.set("bio:" + PIN.uid, true); pinClose(); } };
+    document.getElementById("bio-no").onclick = () => { store.set("bio:" + PIN.uid, false); pinClose(); };
+    return;
+  }
   if (PIN.mode === "forgot") {
     pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><h2>${t}</h2>
       <p class="lede">Hisobingizdan chiqasiz. Keyin email va parolingiz bilan qayta kirib, yangi PIN-kod o'rnatasiz.<br><br>Parolni ham unutgan bo'lsangiz, kirish oynasida <b>"Parolni unutdim"</b> ni bosing — Gmail'ingizga parolni tiklash havolasi keladi.</p>
@@ -1149,10 +1176,13 @@ function pinDraw(msg, bad) {
     <h2>${t}</h2><p class="lede">${sub}</p>
     <div class="pin-dots ${bad ? "shake" : ""}">${[0,1,2,3].map(i => `<i class="${i < PIN.buf.length ? "on" : ""}"></i>`).join("")}</div>
     <p class="pin-msg ${bad ? "err" : ""}" role="status">${msg || ""}</p>
+    ${PIN.mode === "unlock" && bioOn(PIN.uid) && BIO.ok ? `<button class="btn bio-btn" id="pin-bio">${BIO_SVG}<span>Barmoq izi / yuz bilan ochish</span></button>` : ""}
     <div class="pin-pad">${keys.map(k => k === "" ? `<span></span>` : k === "forgot" ? `<button class="pk-t" data-k="forgot">Unutdim</button>`
       : k === "del" ? `<button class="pk-t" data-k="del" aria-label="O'chirish">⌫</button>` : `<button class="pk" data-k="${k}">${k}</button>`).join("")}</div></div>`;
   pinBox.querySelectorAll("[data-k]").forEach(b => b.onclick = () => pinKey(b.dataset.k));
+  const bb = document.getElementById("pin-bio"); if (bb) bb.onclick = bioUnlock;
 }
+const BIO_SVG = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 11c0 3-1 6-2.5 8"/><path d="M8.5 9.5A3.5 3.5 0 0 1 15.5 11c0 2.5-.4 5-1.4 7"/><path d="M6 8a7 7 0 0 1 12.5 3.5c0 2-.2 4-.8 6"/><path d="M5 14.5c.3-1.2.5-2.3.5-3.5"/><path d="M17.8 20c.2-.6.4-1.3.5-2"/></svg>`;
 async function pinKey(k) {
   if (k === "forgot") { pinOpen("forgot"); return; }
   if (k === "del") { PIN.buf = PIN.buf.slice(0, -1); pinDraw(); return; }
@@ -1163,7 +1193,9 @@ async function pinKey(k) {
   if (PIN.mode === "set") { PIN.first = entered; setTimeout(() => pinOpen("confirm"), 150); return; }
   if (PIN.mode === "confirm") {
     if (entered !== PIN.first) { PIN.first = ""; setTimeout(() => { pinOpen("set"); pinDraw("PIN-kodlar mos kelmadi. Qaytadan o'rnating.", true); }, 150); return; }
-    store.set("pin:" + PIN.uid, await pinHash(PIN.uid, entered)); PIN.tries = 0; pinClose(); return;
+    store.set("pin:" + PIN.uid, await pinHash(PIN.uid, entered)); PIN.tries = 0;
+    if (await bioAvailable() && !bioOn(PIN.uid)) { pinOpen("askbio"); return; }
+    pinClose(); return;
   }
   if (PIN.mode === "unlock") {
     if (await pinHash(PIN.uid, entered) === pinStored(PIN.uid)) { PIN.tries = 0; pinClose(); return; }
@@ -1172,7 +1204,15 @@ async function pinKey(k) {
     pinDraw(`Noto'g'ri PIN-kod. Yana ${5 - PIN.tries} ta urinish qoldi.`, true);
   }
 }
-function pinRequire(uid) { PIN.uid = uid; if (!uid) { pinClose(); return; } pinOpen(pinStored(uid) ? "unlock" : "set"); }
+function pinRequire(uid) { PIN.uid = uid; if (!uid) { pinClose(); return; }
+  const has = !!pinStored(uid); pinOpen(has ? "unlock" : "set");
+  if (has && bioOn(uid)) bioAvailable().then(ok => { if (ok && PIN.mode === "unlock") { pinDraw(); setTimeout(bioUnlock, 300); } });
+}
+window.appToggleBio = async () => { if (!S.uid) return; if (!(await bioAvailable())) { alertBio(); return; }
+  if (bioOn(S.uid)) store.set("bio:" + S.uid, false); else if (await bioVerify()) store.set("bio:" + S.uid, true); render(); };
+function alertBio() { const m = document.getElementById("bio-note"); if (m) m.textContent = "Bu telefonda barmoq izi yoki yuz sozlanmagan (yoki ilova eski versiyada)."; }
+window.appBioState = () => (S.uid && bioOn(S.uid) ? "yoqilgan" : "o'chirilgan");
+window.appBioCan = () => !!bioPlug();
 window.appChangePin = () => { if (S.uid) { PIN.uid = S.uid; pinOpen("set"); } };
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) PIN.hiddenAt = Date.now();
@@ -1180,7 +1220,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 7;
+const MIN_NATIVE_BUILD = 10;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
