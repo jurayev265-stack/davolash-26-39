@@ -1037,8 +1037,8 @@ S.user = { profiles: async ids => Object.fromEntries((Array.isArray(ids) ? ids :
 
 onAuthStateChanged(auth, async u => {
   stopAll(); S.db = null; S.uid = null; S.isOwner = false; S.me = null; S.pending = [];
-  if (!u) { pinRequire(null); $("#who").textContent = "Davolash ishi · 1-kurs"; render(); showGate("login"); return; }
-  gate.hidden = true; S.uid = u.uid; pinRequire(u.uid); S.isOwner = (u.email || "").toLowerCase() === ADMIN_EMAIL;
+  if (!u) { store.set("lastuid", null); pinRequire(null); $("#who").textContent = "Davolash ishi · 1-kurs"; render(); showGate("login"); return; }
+  gate.hidden = true; S.uid = u.uid; store.set("lastuid", u.uid); pinRequire(u.uid); S.isOwner = (u.email || "").toLowerCase() === ADMIN_EMAIL;
   // profil (ism, tasdiq)
   unsubs.push(onSnapshot(doc(fs, "users/" + u.uid), snap => {
     const me = snap.exists() ? snap.data() : null; S.me = me;
@@ -1171,7 +1171,7 @@ async function bioVerify(enroll) {
 }
 async function bioUnlock() { if (PIN.mode !== "unlock") return; if (await bioVerify()) { PIN.tries = 0; pinClose(); } }
 function pinOpen(mode) { PIN.mode = mode; PIN.buf = ""; if (mode !== "confirm") PIN.first = ""; pinBox.hidden = false; pinDraw(); }
-function pinClose() { pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
+function pinClose() { if (PIN.uid && ["unlock", "confirm", "askbio"].includes(PIN.mode) && pinStored(PIN.uid)) PIN.unlockedUid = PIN.uid; pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
 function pinDraw(msg, bad) {
   const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
   const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
@@ -1224,7 +1224,10 @@ async function pinKey(k) {
     pinDraw(`Noto'g'ri PIN-kod. Yana ${5 - PIN.tries} ta urinish qoldi.`, true);
   }
 }
-function pinRequire(uid) { PIN.uid = uid; if (!uid) { pinClose(); return; }
+function pinRequire(uid, force) {
+  if (!uid) { PIN.uid = null; PIN.unlockedUid = null; pinClose(); return; }
+  if (!force && (PIN.unlockedUid === uid || (PIN.uid === uid && !pinBox.hidden))) return;
+  PIN.uid = uid;
   const has = !!pinStored(uid); pinOpen(has ? "unlock" : "set");
   if (has && bioOn(uid)) bioAvailable().then(ok => { if (ok && PIN.mode === "unlock") { pinDraw(); if (!webBio()) setTimeout(bioUnlock, 300); } });
 }
@@ -1233,10 +1236,12 @@ window.appToggleBio = async () => { if (!S.uid) return; if (!(await bioAvailable
 function alertBio() { const m = document.getElementById("bio-note"); if (m) m.textContent = "Bu telefonda barmoq izi yoki yuz sozlanmagan (yoki ilova eski versiyada)."; }
 window.appBioState = () => (S.uid && bioOn(S.uid) ? "yoqilgan" : "o'chirilgan");
 window.appBioCan = () => !!bioPlug() || webBio();
+/* Ilova ochilishi bilan (Firebase javobini kutmasdan) qulf ekranini ko'rsatish */
+(() => { const lu = store.get("lastuid", null); if (lu && pinStored(lu)) pinRequire(lu, true); })();
 window.appChangePin = () => { if (S.uid) { PIN.uid = S.uid; pinOpen("set"); } };
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) PIN.hiddenAt = Date.now();
-  else if (S.uid && PIN.hiddenAt && Date.now() - PIN.hiddenAt > 60000 && pinStored(S.uid) && pinBox.hidden) pinRequire(S.uid);
+  else if (S.uid && PIN.hiddenAt && Date.now() - PIN.hiddenAt > 60000 && pinStored(S.uid) && pinBox.hidden) { PIN.unlockedUid = null; pinRequire(S.uid, true); }
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
