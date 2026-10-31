@@ -942,7 +942,7 @@ function viewGroup(){
     <input class="search" type="search" id="g-q" placeholder="Ism, tuman yoki telefon bo'yicha qidirish" value="${esc(S.q)}" aria-label="Qidirish">
     <div class="sec"><h2>O'z uyidan qatnaydiganlar · ${home.length}</h2><div class="card list">${home.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
     <div class="sec"><h2>Ijarada turadiganlar · ${rent.length}</h2><div class="card list">${rent.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
-    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button>${window.appBioCan&&appBioCan()?`<button class="btn" onclick="appToggleBio()">Barmoq izi / yuz bilan kirish: ${appBioState()}</button><p class="lede" id="bio-note" style="font-size:12.5px"></p>`:""}<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
+    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button>${window.appBioCan&&appBioCan()?`<button class="btn" onclick="appToggleBio()">Barmoq izi / Face ID bilan kirish: ${appBioState()}</button><p class="lede" id="bio-note" style="font-size:12.5px"></p>`:""}<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ S.openSt=S.openSt===b.dataset.st?null:b.dataset.st; viewGroup(); });
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Nusxa olindi"; }catch(e){ b.textContent=b.dataset.copy; } });
   const g=$("#g-q"); g.oninput=()=>{ S.q=g.value; const pos=g.selectionStart; viewGroup(); const n=$("#g-q"); n.focus(); try{n.setSelectionRange(pos,pos)}catch(e){} };
@@ -1137,14 +1137,34 @@ const pinStored = uid => store.get("pin:" + uid, null);
 /* Barmoq izi / yuz (faqat Android ilovada, NativeBiometric plagini bilan) */
 const BIO = { ok: null };
 const bioPlug = () => (typeof isNative === "function" && isNative()) ? capPlug("NativeBiometric") : null;
+const webBio = () => !bioPlug() && !!(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
 async function bioAvailable() {
   if (BIO.ok !== null) return BIO.ok;
-  const B = bioPlug(); if (!B) return (BIO.ok = false);
-  try { const r = await B.isAvailable(); BIO.ok = !!(r && r.isAvailable); } catch (e) { BIO.ok = false; }
-  return BIO.ok;
+  const B = bioPlug();
+  if (B) { try { const r = await B.isAvailable(); BIO.ok = !!(r && r.isAvailable); } catch (e) { BIO.ok = false; } return BIO.ok; }
+  if (webBio()) { try { BIO.ok = !!(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch (e) { BIO.ok = false; } return BIO.ok; }
+  return (BIO.ok = false);
+}
+const rnd = n => crypto.getRandomValues(new Uint8Array(n));
+const bioB64 = u8 => btoa(String.fromCharCode(...new Uint8Array(u8)));
+async function webBioEnroll() {
+  const me = (S.me && S.me.name) || "Foydalanuvchi";
+  const cred = await navigator.credentials.create({ publicKey: {
+    challenge: rnd(32), rp: { name: "Davolash 26-39" },
+    user: { id: new TextEncoder().encode(PIN.uid).slice(0, 64), name: (auth.currentUser && auth.currentUser.email) || me, displayName: me },
+    pubKeyCredParams: [{ type: "public-key", alg: -7 }, { type: "public-key", alg: -257 }],
+    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required", residentKey: "discouraged" },
+    timeout: 60000 } });
+  store.set("bioid:" + PIN.uid, bioB64(cred.rawId)); return true;
+}
+async function webBioGet() {
+  const id = store.get("bioid:" + PIN.uid, null); if (!id) return false;
+  await navigator.credentials.get({ publicKey: { challenge: rnd(32), allowCredentials: [{ type: "public-key", id: Uint8Array.from(atob(id), c => c.charCodeAt(0)) }], userVerification: "required", timeout: 60000 } });
+  return true;
 }
 const bioOn = uid => !!store.get("bio:" + uid, false);
-async function bioVerify() {
+async function bioVerify(enroll) {
+  if (webBio()) { try { return enroll || !store.get("bioid:" + PIN.uid, null) ? await webBioEnroll() : await webBioGet(); } catch (e) { return false; } }
   const B = bioPlug(); if (!B) return false;
   try { await B.verifyIdentity({ reason: "Ilovaga kirish", title: "Davolash 26-39", subtitle: "Barmoq izi yoki yuz bilan kirish", description: "", negativeButtonText: "PIN-kod bilan" }); return true; }
   catch (e) { return false; }
@@ -1156,10 +1176,10 @@ function pinDraw(msg, bad) {
   const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
   const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
   if (PIN.mode === "askbio") {
-    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><div class="bio-ic">${BIO_SVG}</div><h2>Barmoq izi yoki yuz bilan ochilsinmi?</h2>
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><div class="bio-ic">${BIO_SVG}</div><h2>${webBio() ? "Face ID / Touch ID bilan ochilsinmi?" : "Barmoq izi yoki yuz bilan ochilsinmi?"}</h2>
       <p class="lede">Har safar PIN-kod terish o'rniga barmoq izingiz yoki yuzingiz bilan ochasiz. PIN-kod ham ishlayveradi.</p>
       <button class="btn primary" id="bio-yes">Ha, yoqish</button><button class="btn ghost" id="bio-no">Keyinroq</button></div>`;
-    document.getElementById("bio-yes").onclick = async () => { if (await bioVerify()) { store.set("bio:" + PIN.uid, true); pinClose(); } };
+    document.getElementById("bio-yes").onclick = async () => { if (await bioVerify(true)) { store.set("bio:" + PIN.uid, true); pinClose(); } };
     document.getElementById("bio-no").onclick = () => { store.set("bio:" + PIN.uid, false); pinClose(); };
     return;
   }
@@ -1176,7 +1196,7 @@ function pinDraw(msg, bad) {
     <h2>${t}</h2><p class="lede">${sub}</p>
     <div class="pin-dots ${bad ? "shake" : ""}">${[0,1,2,3].map(i => `<i class="${i < PIN.buf.length ? "on" : ""}"></i>`).join("")}</div>
     <p class="pin-msg ${bad ? "err" : ""}" role="status">${msg || ""}</p>
-    ${PIN.mode === "unlock" && bioOn(PIN.uid) && BIO.ok ? `<button class="btn bio-btn" id="pin-bio">${BIO_SVG}<span>Barmoq izi / yuz bilan ochish</span></button>` : ""}
+    ${PIN.mode === "unlock" && bioOn(PIN.uid) && BIO.ok ? `<button class="btn bio-btn" id="pin-bio">${BIO_SVG}<span>${webBio() ? "Face ID / Touch ID bilan ochish" : "Barmoq izi / yuz bilan ochish"}</span></button>` : ""}
     <div class="pin-pad">${keys.map(k => k === "" ? `<span></span>` : k === "forgot" ? `<button class="pk-t" data-k="forgot">Unutdim</button>`
       : k === "del" ? `<button class="pk-t" data-k="del" aria-label="O'chirish">⌫</button>` : `<button class="pk" data-k="${k}">${k}</button>`).join("")}</div></div>`;
   pinBox.querySelectorAll("[data-k]").forEach(b => b.onclick = () => pinKey(b.dataset.k));
@@ -1206,13 +1226,13 @@ async function pinKey(k) {
 }
 function pinRequire(uid) { PIN.uid = uid; if (!uid) { pinClose(); return; }
   const has = !!pinStored(uid); pinOpen(has ? "unlock" : "set");
-  if (has && bioOn(uid)) bioAvailable().then(ok => { if (ok && PIN.mode === "unlock") { pinDraw(); setTimeout(bioUnlock, 300); } });
+  if (has && bioOn(uid)) bioAvailable().then(ok => { if (ok && PIN.mode === "unlock") { pinDraw(); if (!webBio()) setTimeout(bioUnlock, 300); } });
 }
 window.appToggleBio = async () => { if (!S.uid) return; if (!(await bioAvailable())) { alertBio(); return; }
-  if (bioOn(S.uid)) store.set("bio:" + S.uid, false); else if (await bioVerify()) store.set("bio:" + S.uid, true); render(); };
+  PIN.uid = S.uid; if (bioOn(S.uid)) store.set("bio:" + S.uid, false); else if (await bioVerify(true)) store.set("bio:" + S.uid, true); render(); };
 function alertBio() { const m = document.getElementById("bio-note"); if (m) m.textContent = "Bu telefonda barmoq izi yoki yuz sozlanmagan (yoki ilova eski versiyada)."; }
 window.appBioState = () => (S.uid && bioOn(S.uid) ? "yoqilgan" : "o'chirilgan");
-window.appBioCan = () => !!bioPlug();
+window.appBioCan = () => !!bioPlug() || webBio();
 window.appChangePin = () => { if (S.uid) { PIN.uid = S.uid; pinOpen("set"); } };
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) PIN.hiddenAt = Date.now();
