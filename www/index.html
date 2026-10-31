@@ -162,6 +162,39 @@ p{margin:0}
 .result .big{font-weight:800;font-size:60px;line-height:1;letter-spacing:-.03em}
 .result .big small{font-size:24px;color:var(--muted)}
 
+.trow{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;text-align:left;padding:13px 14px;border-top:1px solid var(--line)}
+.tlist .trow:first-child{border-top:0}
+.trow .tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.trow .tt b{font-size:15px;font-weight:800}
+.trow .tt small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.trow .tgo{font-family:var(--f-mono);font-size:12.5px;font-weight:600;color:var(--sc);background:color-mix(in srgb,var(--sc) 12%,transparent);border-radius:9px;padding:6px 8px;flex:none}
+.tbar{display:block;height:5px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px;width:100%}
+.tbar i{display:block;height:100%;background:var(--sc,var(--ok));border-radius:99px}
+.specimen .latin.plain,.qtext em.plain{font-family:var(--f-ui,inherit);font-style:normal;font-weight:800;font-size:clamp(22px,6vw,30px)}
+.qtext em.plain{font-size:20px}
+.pinlock{position:fixed;inset:0;z-index:60;background:var(--bg);overflow-y:auto;display:flex;justify-content:center;padding:max(28px,env(safe-area-inset-top,0px)) 16px max(20px,env(safe-area-inset-bottom,0px))}
+.pinlock[hidden]{display:none}
+.pin-card{width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;margin-top:4vh}
+.pin-card .logo{width:60px;height:60px;border-radius:19px;margin-bottom:6px}
+.pin-card .logo .lg{font-size:18px}
+.pin-card h2{font-size:22px;font-weight:800;text-transform:none;letter-spacing:-.01em;color:var(--ink)}
+.pin-card .lede{font-size:14px;max-width:300px}
+.pin-card .btn{width:100%}
+.pin-dots{display:flex;gap:18px;margin:14px 0 2px}
+.pin-dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);transition:background .15s}
+.pin-dots i.on{background:var(--accent);border-color:var(--accent)}
+.pin-dots.shake{animation:pinshake .35s}
+@keyframes pinshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pin-msg{min-height:20px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.pin-msg.err{color:var(--accent)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,76px);gap:16px 26px;margin-top:6px}
+.pin-pad .pk{display:grid;place-items:center;padding:0;text-align:center;width:76px;height:76px;border-radius:50%;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:30px;font-weight:700;color:var(--ink)}
+.pin-pad .pk:active{background:var(--accent-soft);transform:scale(.96)}
+.pin-pad .pk-t{display:grid;place-items:center;padding:0;text-align:center;width:76px;height:76px;border:0;background:transparent;font-size:15px;font-weight:800;color:var(--muted)}
+.pin-pad .pk-t[data-k="del"]{font-size:26px}
+.updbar{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--accent);color:#fff;border-radius:14px;padding:10px 12px;margin:10px 16px 0;font-size:13.5px;position:sticky;top:0;z-index:5}
+.updbar .mini{background:#fff;color:var(--accent);flex:none}
+.wrongs .t div{white-space:normal;overflow:visible}
 /* form */
 form{display:flex;flex-direction:column;gap:14px;padding:18px}
 label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:700}
@@ -328,6 +361,13 @@ details.install ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:
 </div></div></nav>
 
 <div class="gate" id="gate" hidden></div>
+<script src="qb/qb.js"></script>
+<script src="qb/anat.js"></script>
+<script src="qb/kim.js"></script>
+<script src="qb/bio.js"></script>
+<script src="qb/tarix.js"></script>
+<script src="qb/til.js"></script>
+<script src="qb/kasb.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -336,64 +376,8 @@ import { getFirestore, collection, doc, addDoc, setDoc, getDoc, deleteDoc, updat
 const FIREBASE_CONFIG={"apiKey": "AIzaSyB4TG1L62RiCbjrDg_fbxVNBRH3U-RDXMg", "authDomain": "davolash-26-39.firebaseapp.com", "projectId": "davolash-26-39", "storageBucket": "davolash-26-39.firebasestorage.app", "messagingSenderId": "1078752734057", "appId": "1:1078752734057:web:203e089588cf02fe202bf8"};
 const ADMIN_EMAIL="jurayev265@gmail.com";
 const SEED={"salt": "AiljexxsrPP2TvfdeFanDg==", "iv": "+moAL9+fruxuPvIL", "iter": 150000, "data": "2/8emV9RELQ8de7t8oEBgKTsSEJSri/+yui08PL8GAknYtVckffp8chP/ydzlGrafveo0Yj9JN1h/XecyDRLWLb3bb0Fw66Z2zP7ITqJsFlqY9zt0sWr+E/fdy+fAf46dg/UPnsZck7i2G7sHR5BpfnG2QEj4df82YuBQ03OGcopeTNQ/gQaAGNOV+j8kqhd8K1oZs0NLrsFKpwtXLC34lc4o9h5kne6+Nh+Optina3W8nnpLs+kFxWv6BKADk9O70jDwZ39LhO6p7aorXIt71B3nxqze35kt222PXokYplwbLmnqeO8fvTE26XEmEXCnhX4hqozKJMe4dQosEaxTFUQ42ePafm/0UyAFMElXN5VV2j1zzqxVRHctyvWlAMjHZJUQsBNp8eGkIirM1y6emvoaKptvjj/zIsuJs2R4bPrTPHAYM5TbOjIDJh+U9HF+/pnXw501+2K+ysBLVd6yQ4pn+j9KSOldjMtCfKyGm0ZIMVRpRYSlAVl84fn8xcI05SyqKdbiMe1O+s4WjhOLMOCfpLDRIYqXum0QEDUtD4gJB+DaVPlTc/SLkdsPrOhSOXG8Ft+lsQqeb0q/1zBqxDLItkxpDM1Ng+dLN/fLNphdupWPOFZP1goUWfplWSUlV/KBFAHRVL1iJ1oCw9/XgWICbfP6qzRNTFkvUzTqNP/t73mmVb9crr9S28/94UFN2ZFdVN+s20MHFSK1NnsLSl5ck+dOooj9QseBpLvPEYdRjxvxn5E3QLPjnv94x0nsrbkvN93LHAAlROXOm28pDIBFdQmyM/D5+tHf+CDwx868IoYpqRJhOMSw4/VzOPFrmT2iDbnYRxPh/TTAd+2+91OUuBGU0SlF2LgHUwpoioekzNWblmaoMSMopYbZ+goV2fbquYmP60SC1zp4CIRshCf3B7ZLbi6TPe+B8x+EgmShrMkX+UMlnDgFKBcVpI0Nkicr0QnUh65wfJpBicHyMFJUYpFC4ii477FZdALsgl2PIi2iJj3wWos8IWM4mslsZvPa9+LkHdyXgrE2ffOM1RH1t1Tx8sxxp9XGONilxx1MpJKI09CaKO0Xc6wl21HwBQYsoaoe/rJ1FYdMtqilIohS3JacPyY1rFm3y+RPFLlorc3cASFHnQVbVTD9/B3JTmXgGGMKPsEwmwsr5xUA0hwCfTkCkIIXx+PVWyqETo6zQGGrrVlm5PHhV1ax7tdeQxD920Mub4u/cg7EOnS4FTJ187e8lsjWmsg+hQXXmroJ3Evde0bkR7/mcV/GpweOGmyQ/esgvHK00J9/VXzXZugV6piKCKfkKLUDDWqm5TnmhGl77JFc+/StPA/qaSeTWsT/HpRMVEGQjcQ74llwOXeYKrhh1CZw2lM927zXEj/TG6ee+h2qEOwpr7ef9VkdtGz0tZxWvWCRrAKNHnpYQfkJwTm6UcvVP0yw6kZe3a1R8teYv9IGWMAy8w/pmbvA45NJFBRpgdWMKEbFn/PDtf/GYL9u5pPQ5AxNu/74lDs6Pk12DhJl2zxgiP7RITfa9yI/15cQiea8n/KCARgNr4+dBg0ekQ4fCTwbu6MDfuOUqKLkFv7jf8zNExfTSAvmUbF1kiC0kolOoa2LpS+0WI4pXMiqhnEWL3SchCP7S1TEeimQRC+zuap6XM07NuONgrJx5q/eC7kY5L693XPq+AZq24oCQGwwWCt8r8+eAT19/ssl+7lpMHnMdujClH/elPVqwM1YkKJn/y4qMk6Xtz3v7NQ8c79I0XX12h27mnSf8IF8cqKa1Wpk5TIXp/uG1YlMjKAtu1OgDxv7vingcEXOAfJ2IBN3KU04drubqXTiUwzKznlYCPzFz/lNHb4SOSuu8/nCYvwVU6RuST98bYAE5s33syUM3nVxRKqll6WhcUA1jkazbvqAHd80mp9UFMsec6zrTPmSlIPm7vq55RtLfbpCkOZBIal+/2njf2IxNI1DzR6iAm0UTE2WwBEIfAsCFdUVGwwq1qM63qcUPYiW5S5QRu8vOpYjsd7REz8eBdKJoCA2w4yg6/tHupHMq9+7gHye1K30S8E3vxsj6zwhYo9fOCNW42tB+4Vibb94e9Ej2Mk7SlLQ4+QiqtTsipF0Fi+gBU7AhySF8SjKUN9YWe9+48dXVJz8ML4BqA4t9jp5i60sLalzB2VL8ByHs5qENRrEckhSX3QtHRLWR7NODRLtNREjctemAKfqVVXO7OcsVYE6bsYU/yVPp3EJUW8oXAfqvOS6CX4bz73ByAsBH2JytOyNv6LcT5jw5iSmG0R8N1qhg3RPSqVz0y2Nq0eSmrsQ9HHL8Q/wqmsZsNKUNcPn7iC9Ku67FPY/2m2AeqbNv045APHYz6CsPoOkqYg4iYUY+n61l54Oj3P8qUJg4wzs9fYagPVsQlmB6HbSeLIA0w/OAzhRNYqEBOrcDP9lmQ/jv4TDTU8I3BRpG1jyhorz2cEfWy2WMVfkR0+Jd4nWnwESB+kOazMLCO/Pu2Scee+ErtS/bVHpraPDIWEhgOncN2lT7J9jAR6PdMukmepMCBjKVKIEDDvRPMel9+05DizR+E6iuGorSKD1OTw4U4PZW9NbKtKFpWdHhaLh3B3Xl6fHwZ/aIK7jG7B2XvTU/53/xFE8zbyl9ZKhhj807zpoQuwPb3G8zyPeDVchV3WnCxF9Q5/Pak1NUs9PiumgLShTcnHczAUOrh6Ubvfb1dAGFUUHdCdrPNYGW8nXLyTjXOclGnFLWkD2Bh0ZiXHb+MhfKJp+kHvajIIYVPJPY+UGzhPygsRbnON6lsCZ5FjljnX9B7frKx3dSlvkXh2KjymLDCoBU369W+lVbjTT3BbpKel8RB1ET0xSL45ONZ/qgY/WhmWcJvpL7CBdN5obmYV+dZgrTyN2Os3Iu5MmHMz3omTP1uOAdusN/jIjn4YPzG6Oij2gdJm6ds3YmajpDvWxNEjuxrpWlupm/X9eHxnZscgMfkn8PnXzNHJ4TTwUTGzEDLa1sGNTCpHYKaFsIWsYhU0DWwFv2ncA0Ym2/4hk02hguvSibNiLQ3Ja2wsP+ehaOr7YMiTrPehzinIri2YLMBtc5r9JmyRVdfe5jNSrg1rPk2uAd2xPkY0mtPK95qUay++AaD9vvH8Hjf82XqtXZuTpf7Yh+rN4u/BZWd0RL3K1YP6qhOZNKmwRIhUJyM5nEEYcZBAvsh2bI3TFhqymSavwPIr/RpcfgnFUswmoHPLbZhC36DOeY5LC4MMJlr/t4eFLWC+6/YnyJnCNRfd/R72tdmi489f7e3yS532IYuZe561s6gC714apk9YdbX1hjzCHaV22B28tu6yIScwALnueEu+d1ivKk4o7lbdawr5LNyBc6rozyaNLy+sffr0W4BvNjUJFTl0nF46TNORKdoqoCREkpSEba1iVGyyp8azns603nBPGMMZ941Wjgxuuy4pFvjTNkaWDuC3qsl9x+fuPRccTI6ziIgi6OgR9fKXhGVj9ZFVA4Ycfvuq/j+WKiWV0QEuHMpHhBypznZgvsRw2F/1MKxb4rOfOYLK1q8vK/MzbrMtNCpmXplHzn8UGjZrvaX1R3m2YhESu9hHSlGyhjB2n7Euin9Xdp3kF6eak+J/rwqBrPatz2uJyYbKsQA0qw7hqZU1bFpnMgTFK7sh7+BKOFbZ8mwjiwxEc4/s+4NVMcCSlL6ALMbog9ppy6GvdfYfr97EZ4vyId6FzubJpuqvEu//LmSChDeNoJ9o3ynZSzcKDphbV5lhZgGLE6ZfQShHZdJv2gLt7Wq+23gejJ/OErAAlcrBOTkBZ+04hnRXauR5n/bhJ8q8q2Ez3mwiJMZ30anshcLGMC+mlzDOhzxBbXqdA/TBT4jXqZWa7GK6RkbcWZpn+lk+N+gGL2kjlxFxhVOREI3aPVvDxTLx7GNFwQbJh5Luo3S5Cp4FWm2xUZyYateAWkNzEAFgLo/sNSdzog5Tqusrt4BkMo6121TKjjJNR8uN7suXFcf1XB0fDi/gx89S/iIrbO7G9NOPUXaBvD1FGzSY4v6jtDl4HciTRZ0hX4LGuYYL4tYlbe22yk4EhBD/q9z6w5WRPgULTvjtrs69/BTHVIXPSvtvRcIVz98qB4TaMVAnLwfwal02zNf7vHwhb8Jnb+OUh1IL2xa4d2oJBcaMmsfTAetgaNGHTT9QekmMd2Mx5UkOpz+/Dq6ovSXe9I+VzoTUJHPOc3ALinvtNnGhfWKrlWjy4ziIcR4OGEVsoVVIdebqXlVN0U3HQtYi+I0UCg0oIVgxj8L0TAnLwZdLWUwKeAadEFdHqnzCZ3OeeCBwWiQL7ZMafTyl3tXRBSfU5Bd+GiWf6h/VQBUU6UkPP0Kprxreiepo16hlfhEifC3nMUT92hkhnwm9YjSuABgN9Wq/sb9OIukkcIR5gdZLr2G8dT7M3RfBshVgoolaN95rIJytLU7DnWPZQHhvzP+TlC7gfKagCdMBCByBbQI2XOOVTBxLv6iS5aSKWJ3DFuhmurBGSqt0YOubpuVlfDNLDrwTnJ1AaSljwjX8A5zqh8iiYi6w80nf4tHRCHv3YtgLMu4gcuZLEjGIrsqKi99H+kOzrgYxMbWhe8JWCS/23N0kYaCcIsGqtL0UIuTmjzP6+22wFDA/1fLU1wb0EyYhkA4jSZOobuNeP5l7DTziSceVIhlBavkSjAON2fclxTfxfolkWF3N6Rl1qmpPBYO1L1IXFeFu60nwq4sKwTTQwQ9ipW99F3zpFDMO8yYm3ubMTz9v5W14SuMzE+WFr8Cvu1G9hfZW1BRJD8XY/MkLO6dZRmZlpclEHUF+sTbU+X2+tibuVX2G41aZa8pF7JfZEZKAaeSVi5gB94/RM/m4nd0Ow3vb+KYSt8sVWezgRfBdEMOI1PxPKhmq868D3800wrciv4sqm8izwNgojoYyQR/mx7Jkk9phww/iM7oRw0KoBCwuW1mvykVbTfj4bNW1FfEGQKaMXNS66qd4/mfrCjgYeUIqIy0mid9GzKBIRExZ5L7xkED6pNXWR0l+55e26UpLfKL5LU5hukOfrkgWtwVIWaSi6sj6i1SXDUa9enfJ7VWtlVLzywBDgY+21J4DVP0VmGObtkfbiYcj6KDg1tD8WsgDBR56umx8HeOTXWh0N+TPwM9jiBiofqBGfi8+T/pdCCNFZ0kXwoZrmxzKLncKUu6Y9gnLFOLTHPccEsxUX1ztAzKLubAgG64tFeeU8UAVNtYS+Y09ihDtxnVX49L9YX3MGbSgfNOkPL+QYwG4006EYwKu0T8dpQKz4p/nl8EkcuWokfCmOEE+MPXzesC+Jhw68dmnI6RDYqh8v+6sjqTFt2tdSy2bRgAmSJUZTHH4vDadeF4wT7cF8gwoJP8iq2DGihqReRqv3WXIsB/Yo+66a7m3w8wfwIjVRnSHzB6pGt8FXzDoxKHslg7w2PRr7b6hG12pcTqVjw7wvu0oVR4tg4UZaFl7DkycwtUBdNEo+F5lAvBX9JC5/sQijJawycmgOtbuTa0qhQV6wDMz0OnEHME3cxYg8867YwMsp9ZBz1tjUjigMvxZ7DBO+PSjl/WoVZdKT0VxInHOhKaW0TsKXcTPYiqT0Obgo+MNHpClSRejtlx0deTo4mWOkRTaAlBlzuFoOS1L0tMPhobUC2YGWtMHdhfZbjSEOCqFrTaq8WmPdHlHdr/8qZDsYbTFIczCsKawvv+BexiRTOg6mjNzeY51XUn744ClIK4qLVKfLU+J8XR+qG8wF60Pvi8HjFJc9qMJ1FyUeCUEJ/8Uaf4lCr9+7R9fLyHxG1Li5oaeyI6Wbw+NK5yMzTFsNFHWPcqfbN2VLRHjef5zc6bugYmmz+QR+Y/oElrKM3WMee1K7YXgCU5oNuTIAQICj1PXlc3AuY01BG5Erll9nMXuHIaXBsOWkcGaibN/fwL4ZbTi3JMZhGTeY4NhLWkaocKqFtVGZUSrwFryaq6d++/UiDNZLgffSHP8/dm/Cyn7uIQ2MmOkuDh4Q+20DVWUPiKXJaZCPkw6conD18vL5Sif56vROjDH+fr7OQ0LXyDVJ03VF5a/NEt1RPok9dub7FoJOeNjngeQ0wcfgA0whw9O8ZMRRAi20VLCIK9p0GCGQMk4spJiSRH60r012QFVT167XbVdyEU/+5AmQl0XGtyhZXU4pYiwVp89MwY0BuhV8HxN3GS/zSxpvfn6ziA/Z/aKOR+fzTREU2MPLDvNkUZfFrPZPFVYY6awocI5ex082C/Ajf3sz3NQgFp923Z3LpJqNU+GilSLzZ/mw8FSuwO3hfhtb9jQop6l46RIGknZX6aQe4/HxafFm1gSBQsdQuPMWzykpa/JPcmJe1hpdwDwbqFCUu4LBToaKGWyCvqh9JqABO4+hhBSXQHb7TYVgjAm30ikQiiRY3UBNksr5PDpYUUmY9QAlk/0Ohbk27ZZijecORTfoLUN2R6Ro9T5602EeebuXM4PIn+kh0ESdbOhnpVucXhbtVPPWPfvS+ZsF7jA8I1gjCXo8JExaieorP+hY+hkF8IoeRy2CMmD3zNQYTjcCWNCBJJDyPqP32+evJL3gt5WgxRTC/kr5M1MXBtplb66wDJvM83X6kWr9GsEmWeVCMrZHgpwp6wqVBgvtY4W9VRDSRg8mMJo8A4hOlgbO/J/xYuYRCzoLbyi3P4LPhd+hhK9B18secGGZof4VYDieQWHQT9M/7hvgK98SqwNs7TQPaI/NABIgGpskoASNhsXAizNBluGOAh778w02cwFKMOnezceu7Bk6UBL69CkWUEZV0mPD+HXBkTkl6clJFFiIyOA3q78YwhFAXKWoTjmfUfY5DYzGw86jEoMueWJi061ot0qMgM+lHT2qd6nxCdH1l5w/zeFGJfTa9TdR0AA59M2UbeAseQhb/Qc2feyAIyWlSMiY6DeZNh7LhyCP01DiAxGAtReGxfuUBbQ+Wr5BV7TdMP0e7VMtKoJTFdduWaPjgQqn5mdvBoTf8ngw32c4GNW/ywM7z21TZ+4NhnnIlDWAN5TkrrVIpPkm93GngnaDXHsIhba79Yauhp6urm+yidmBA6IqXulsNCkGHHi9UA6Hi2XuZtq478AaQp1jMmwzOwVZrz/CFez1kAyJNxUUR98hqDJbptUMfqRxzH4xTTt4iGs6XtLA+GGv3ZXqmROFtOuPQT9EJdx+0mG+urPPb4pzsx/lVvsiPa/9GIsj/+jeoZIQGWKeb707dtHp4WZAO92MNvQx4xvVeGa8bF6u8cohwkLiHu6T6X7S8C2lPwm+lNA0PHUwU5bDnU9ezyg10ClpF80eTmJzMjEmlw018JF/8kHIEU3ucaM7Mtmm8LdjzE7JNkausZSRNeXZflg2UfB4VNSwVgg+aplaAmM8kiy48YjqGt5vkMjBU2J3LHvLggMaI9tm657Fd/O794blgZNYEXYM6iJaWztrsaLaM5OxI1d1yCRxtLRnuAxmzUueIpr/dgBwCBA5dMH3ZclVd5xc0p9fe/+SjGq2MCkMSKeqsd57xw6VqsMO2TB0ykr/YriVEHtMfT4UpzmrNiS7O0oDIgI9pnjcLnDEzsHPktaLGKe+0W8Dfv4bgZaPzFf2b9ldMG+51bciX/J55uMMVaeiUJ2rfsmNGKhNxl6blOAZf0OYrITMgLfezHY1FkhObgNxPVJdBX9WtIiCHKx0nWsuku5Rw2OTGlGZ+2WDHf8cOsMFtgM1cXlRjlPrQv/k6l3N4x79FMec2jRAQ5Tf/W4RW0bXrHQF91O/Ss2b6jo4kS7Xyu1vs1oZV8QtI4RciMIJPI4wuI6fXex86aMXl4eN8mCz+xR2I+yhf+xMC7VyIUBRYeyhpYeRzqoSrX6hbqdKxh0nEnkTRXLaezBebxKWVVZ0/DDLJIAhrJh8sg79izxoFt2o2yK+6qG9jimt6j1S/Xe3CQd5yFdCV1y5qKeVwKwnzGbtLv12xQbLxXcC5DljzqXGPuX++k7a3CMhDGJsCCxBd/LO/0SiwQpqWY6S2CnE/MltJpjcMjaa1BBe7myPeG7Xr7rBjJCZC3DMznPN8LSAAiefABqVbiumM7t5NpNuap+FPThjkGgMN47MvXhOA1bVxxjSLHEkmA0EJiPU0aJayUszZlmOixGvSlDLvkxeb27SpHK0Qa7+CavD8FeoKyX+2rFimsYFsa+gkFoQ1aqZ7GOd2nlxuJGH2QUz8mxIj6nM09ag3jrqIgnze8DwDWECUxXMnKBpMfYpvC13gL2GSPQ0XSbODvDTozVpIkEkIb8HWt/XvQgd+OVceVYrAcPzwBIbpCHF+rzADndgKsxuLRTlB0BsgyHXogAMPK3U8Ioo09Wq9VMOgRVKQlbM8jiP0md7Y2LkqtoajRiQ6hYqCyWJTvKmZDpCNyuOaWhlW5oiu9QADRdPEeWd0du8DJrQ8LzcH/iRI8ZZFXYHYdv6AcCL6B7ElCZxYNZeKyPiFkOYxwxdZ4a5ZhfCGsZ0QBOS9UWk37K8tHigyxY6RZBO75Y+2SFUtZKzCo+jE8+Jc2mi1tMmm8VB7+kM2NHCzjswjkJfFOyB4pMAWVAvSGI5GTwiwpABcIVrH/GDB9ryJipQ4KfakaQ6VB5SEquI7DNkNwAoH0q0bAzGeiEN3JTDToUCYG3usQ1swQn/wlVwWdxHfp1VeJTP3Cl+7gJFXl22toag9DP8B49oDBUJemzCmQc/5ZuPBD7cS4dLLctdTj86Ib7AivVzspWie7U6X2sxaLVCyV9bbO+Q5ETAizHiO/xYvn9VvAMNEHb63D6+PCglAcdsSFPtNdxHp8DjZLKaYaAIy4IRiN5wp95phCNl9LQAzJPBX6if7zpXy2guvIYOH05wQBhTwcoNEt6Zkp07gD6MrQROVwB0vnnGGgN1+7IyPd7JiBJRcO6cWDXVjL7t9WwRlJj2gd21o7i+7B/eV6epIRLmbdSZYi4hyiM5ianprVjey3wCnxAzt0eARuGoeg8P+fwCnAlpcnhsQ/2kz3ZyA5UdQ8PHfijH0b7L5zgsSxPfEEZEpAt15JTuXiM535Ngc5xOtQ9zU408qyrzkW7sKHPkqtfYym588PQqMq8PjNzi5x4RStiTleBg8+MfS8LTQy4VCqBws9ypFOWr1upoPXZWjDnzriw9gPwHaP/9/IFmOYrJcxo0Fxd7ubprmO/a6WwjQCKSd4hUPLX6ZbJG43KPSfSsyhl/AMXPjagfzxN3STDHnh81y9/c0KtEHpiBsI7Mzo3l5UXi4hgKpYjyv7xDrQxznfTnqXbrXGPUJQLdF5OqZQwgvWngDLQwilKPh29FbrI9arjrAEIiXsa3zsBo/w8aa8F+P9BcVGN8J6JhPsmDd2bgSePCNH8piqWNuWFuLgL11zkPltHVmFycM7od7paCtJntqT1Tz8vgqTHEoiA5N2+wBuZsENzNrBWu/L2hnhioBdC1C0Td4GdkO/TCQiE3BUgm7UDYlrRqoqHooS05KjneHk8jPX8+75xXQQdo5EMDdJ8FA7Giz6+eWIyLFQ6Gn60osPkxMHOuvKg6MMwIrdPBaqmeGKAux2HU0/GcOZwWUT8koLA6YjREDOGexEvRXWrlt89S+SnFz5OGMmV1Ygf0rbjYNcjZGQRHJHa+jXCm/jRU0DWuiz6GN/Oi74fGG255hVfnPpNYX1kTd3dGH8PR0/TsMUoR54ks2PZ681QA8NwZuorVsmyMyQAkNNsApeKoj2G6f7pWcVLkb4jImvZUukssqcC2J5H47VNY6p4V4e2fDBlZjqKmhVqQ7U+WOMmhR7CRoFHhn2IiAVdF0Rn0fttGDWO2pKQOETfFXBtvPzdjeSUlA28OXVWjh94ik3zi4+3k/C1O3xBO7uBGWXu1kT3Cwgxj3ofHC4WjtZz7DpKO120O6o6tGkjT3h7xO4Gxf/19ueT6VfyoMMgd9ToHZY38X1LKzeDcvJPt6G4vXEbeXeyhgWDFXeCUsiP5TXT+yYbaQ1pSLV75CHKuzZm3GOgxu6ZfDRD6abukGQe7NRssJtGAQIXYZNhK5uT7HVp+2/kk/IxwgtOO+91DIV1TCjxCwmgzCYIdx8jNE4CJJqsH/tJ84Z6U5ygipcFAHDaQ5jhby5LCx5nelDsTVStcYTEa7XySnKiEqM9aZsuYZZ0DKzapk3qdsKvAOgdJlVizhJqHT69b0naoTrUQ4OyX7hDjwlV20/iWQQZCOqjLCV5BlIBPKFxdTU4LjOWU7NJvcbSCfZbFvK2LRWpfDWiy7h8DtDOrMtTifv0XyCmDtG7dZEoLkHwcwgySr/EdLrz2DKwUpiby+EwRZ9nwSKymn0q/lZlba1/J1owDaiUyymhk/oNm4ftrY+akwRnY4UZjMeFZ2KwJ8EUZCa+86qL3SDWb4B1QSp3lw74YrI4Lrluq54iyREJBrZEvQxRaYeURozVHEzFrd1d1zdO5Cx4ktKc8InsZtLjwnfLWJWbANmcyxa0UKPVqnH9kW/V+c4Y42nZAXwOa3seSClvJpj1DnIEI+g3kibxy7PM15Su9DKOO+Dp6E0hnus4d3SAhb9jSQxhM8aboptmLJ61RGn1GgTAXRLg5mPuPWd6g39XassaoRQjQX+rPUYaPD9gIRw6o7d1kbIZSxKXSrrKCF0qAnKxiSWq5kA6miChQ51DL2ULPWDCnut8zzqim+RG+dVIhoqZLBXZxaVb+AJOwDvbsVEjWWhIxJNJkM251gS94rI+DAq7gRCmPlf++Hd71kDOsA1PKjt5JzqJfqvydMC322oxz/NThab27eKaz/uR+TCMg2ML0e6Z5W7TLQQIE8lccOJCoHtmBYvQBAqnVzqBL+gDUxJce0j2EkxuW7ypvILd/c/uvx2qSLVVgetSjmRaS4vmrzr8Dq8pZaVIBlD9aQIXFbNRPUycIDesC9PvcsnUcuxNYysalHcm1+h6LfnjAulbqM2KsKvQCeom4mOIdJ/QLOcgfBLkNuDzYprOw4VU4KyckU+5RdXskZw/JK4D8pYhIg6x1rR4CNpBfdSxcCMMXY2yuhfakDMeKAoOYRDHoadQyw/ujd+1DQklGQF2+In0yh34ck3gUjlpa/GmP0VMhGmQaapvP94elfUWzeK7TANoIwsZdusw01J61IJkcDSgkycE/ijw7TwfT+FYssDBZTDI2zAjHtcHEIAS/YVrCMsfOKSz2fZaAs61D+W6vDHMNaSS+OD1sGCdxU4+CyopSwUBGM2BZywjD8IDQOqzAtUJyNfwlPOz3c6SazH+sh6IVhiVaetZCY5LKVkmDpHMuquihttqbRamGCkPs1ba4w6823x4iyd3i+kIRsBOFk6ybR9hMM/hhyGSTeaySeJKlo1sXe9+BhtcrgvlTmTFzLByjdo0jkVJ+i9qDI2on3x3Btax0ar1mZdPsTJcSopKpbPRflBULThxl6miFSRO+k1lilPP/P/gUetklhb1i8zv0a6Z3V+2qNHjQr/QK3SQa7qOmZm+h6qits12lGe30R2XqG4nKDSiNTBSbAy29J11nBafgPxJZhMPl56ruHnc7NV7lEyPVNTPQ/bjlkTGs87DGi619994J0mWqSYVB/WODPIBLaVNBWcj0lCd6QpX1Onzbdm/+IpkRjuZb/JIqL6IFIMBr8bzHO2F5EWzMKVOZJh+R51qDvyEHlNFGAmUzyIoJbrRZQBrrN0xe6G5MoivrcRjfovUtkZydsclztkMq+YbcOPoENQSjaIwoMcW9eFqWm9urTwNMWhbOxtJo03RwxpzS2a7KZ1omqFTgWTHvCzzokJoxUT6Q94qvl/RSvcjdYurJiNNzGSSEtkceNQeiMATtmDuESM/5SmEJ3YjFfg5fF8TB+bD4+eNuQNaAZep0YnBXSPbImTY31B4zBk0IdTGpHMkCD6duQOZR41WV5d8OsRQ1dXD0119F55JT4mkT1NV9t6jeK/Zb3MzwtvmZmbQJl+9fFTbOgFtks7kliFnfnQtGv4EMzHyoOvZ6Rc0zv2K2FimQrF3sE5P8HrsZMs7PVAFNTUl5nN63246cOL1gVVjjRSb65paTBIYB6dx1gfumX90yCaU5meRtlUbt8SK7ycvipZKwRLjFljQH672cDaBF+9F5V1Puv7lEr5WbuGnvlBptjpzVLB4hQKkwJtQZX0jbP/UZ5NLukVZjqqIGCvaoAFnxRDY8uiwOKi3UpPWow1gpt3OguZO2vksrkmbS2Zy0QDyibnAhEFfq/Jfscgw/mrWMB5Of+6COJGeLRyaDaisDEOUa7CM5JKvw2bQnYbAtWE3SLFsXVc="};
-const TERMS = [
- // Suyaklar — Ossa
- ["Ossa","os frontale","peshona suyagi"],["Ossa","os parietale","tepa suyagi"],["Ossa","os occipitale","ensa suyagi"],
- ["Ossa","os temporale","chakka suyagi"],["Ossa","os sphenoidale","ponasimon suyak"],["Ossa","os ethmoidale","g'alvirsimon suyak"],
- ["Ossa","maxilla","yuqori jag'"],["Ossa","mandibula","pastki jag'"],["Ossa","os zygomaticum","yonoq suyagi"],["Ossa","os nasale","burun suyagi"],
- ["Ossa","columna vertebralis","umurtqa pog'onasi"],["Ossa","vertebra","umurtqa"],["Ossa","sternum","to'sh suyagi"],["Ossa","costa","qovurg'a"],
- ["Ossa","clavicula","o'mrov suyagi"],["Ossa","scapula","kurak suyagi"],["Ossa","humerus","yelka suyagi"],["Ossa","radius","bilak suyagi"],
- ["Ossa","ulna","tirsak suyagi"],["Ossa","ossa carpi","kaft usti suyaklari"],["Ossa","ossa metacarpi","kaft suyaklari"],["Ossa","phalanges","barmoq falangalari"],
- ["Ossa","os coxae","chanoq suyagi"],["Ossa","os ilium","yonbosh suyagi"],["Ossa","os ischii","o'tirg'ich suyagi"],["Ossa","os pubis","qov suyagi"],
- ["Ossa","os sacrum","dumg'aza suyagi"],["Ossa","os coccygis","dum suyagi"],["Ossa","femur","son suyagi"],["Ossa","patella","tizza qopqog'i"],
- ["Ossa","tibia","katta boldir suyagi"],["Ossa","fibula","kichik boldir suyagi"],["Ossa","talus","oshiq suyagi"],["Ossa","calcaneus","tovon suyagi"],
- // Muskullar — Musculi
- ["Musculi","musculus biceps brachii","yelkaning ikki boshli muskuli"],["Musculi","musculus triceps brachii","yelkaning uch boshli muskuli"],
- ["Musculi","musculus deltoideus","deltasimon muskul"],["Musculi","musculus pectoralis major","katta ko'krak muskuli"],
- ["Musculi","musculus trapezius","trapetsiyasimon muskul"],["Musculi","musculus latissimus dorsi","orqaning eng keng muskuli"],
- ["Musculi","diaphragma","diafragma (ko'krak-qorin to'sig'i)"],["Musculi","musculus rectus abdominis","qorinning to'g'ri muskuli"],
- ["Musculi","musculus gluteus maximus","katta dumba muskuli"],["Musculi","musculus quadriceps femoris","sonning to'rt boshli muskuli"],
- ["Musculi","musculus sartorius","tikuvchi muskul"],["Musculi","musculus gastrocnemius","boldir muskuli"],
- ["Musculi","musculus masseter","chaynov muskuli"],["Musculi","musculus sternocleidomastoideus","to'sh-o'mrov-so'rg'ichsimon muskul"],
- ["Musculi","musculus orbicularis oris","og'izning aylana muskuli"],
- // Ichki a'zolar — Splanchnologia
- ["Viscera","oesophagus","qizilo'ngach"],["Viscera","gaster (ventriculus)","oshqozon"],["Viscera","duodenum","o'n ikki barmoqli ichak"],
- ["Viscera","jejunum","och ichak"],["Viscera","ileum","yonbosh ichak"],["Viscera","intestinum crassum","yo'g'on ichak"],["Viscera","caecum","ko'r ichak"],
- ["Viscera","appendix vermiformis","chuvalchangsimon o'simta"],["Viscera","colon","chambar ichak"],["Viscera","rectum","to'g'ri ichak"],
- ["Viscera","hepar","jigar"],["Viscera","vesica fellea","o't pufagi"],["Viscera","pancreas","oshqozon osti bezi"],["Viscera","lien (splen)","taloq"],
- ["Viscera","cor","yurak"],["Viscera","pulmo","o'pka"],["Viscera","trachea","kekirdak"],["Viscera","larynx","hiqildoq"],["Viscera","pharynx","halqum"],
- ["Viscera","ren","buyrak"],["Viscera","vesica urinaria","siydik pufagi"],["Viscera","lingua","til"],["Viscera","dens","tish"],
- ["Viscera","cerebrum","katta miya"],["Viscera","cerebellum","miyacha"],["Viscera","medulla spinalis","orqa miya"],
- // Umumiy atamalar
- ["Termini","anterior","oldingi"],["Termini","posterior","orqadagi"],["Termini","superior","yuqoridagi"],["Termini","inferior","pastdagi"],
- ["Termini","medialis","o'rta chiziqqa yaqin"],["Termini","lateralis","yon tomondagi"],["Termini","dexter","o'ng"],["Termini","sinister","chap"],
- ["Termini","proximalis","tanaga yaqin"],["Termini","distalis","tanadan uzoq"],["Termini","caput","bosh"],["Termini","collum","bo'yin"],
- ["Termini","thorax","ko'krak qafasi"],["Termini","abdomen","qorin"],["Termini","manus","qo'l panjasi"],["Termini","pes","oyoq panjasi"],
- ["Termini","os","suyak"],["Termini","musculus","muskul"],["Termini","arteria","arteriya"],["Termini","vena","vena"],["Termini","nervus","nerv"]
-];
-const CATS = {Ossa:"Suyaklar",Musculi:"Muskullar",Viscera:"Ichki a'zolar",Termini:"Umumiy atamalar"};
-
-/* ---------------- Boshlang'ich test savollari ---------------- */
-const SUBJECTS = ["Anatomiya","Biologiya","Lotin tili","Kimyo","Boshqa"];
-const STARTER = [
- {subject:"Anatomiya",q:"Odam skeletida taxminan nechta suyak bor?",options:["206","180","256","312"],answer:0,note:"Katta yoshli odamda 206 ta suyak bor."},
- {subject:"Anatomiya",q:"Tanadagi eng uzun suyak qaysi?",options:["Son suyagi (femur)","Yelka suyagi (humerus)","Katta boldir suyagi (tibia)","Umurtqa pog'onasi"],answer:0,note:""},
- {subject:"Anatomiya",q:"Bo'yin umurtqalari nechta?",options:["7","12","5","4"],answer:0,note:"Bo'yin — 7, ko'krak — 12, bel — 5 umurtqa."},
- {subject:"Anatomiya",q:"Tanadagi eng katta ichki bez qaysi?",options:["Jigar","Oshqozon osti bezi","Qalqonsimon bez","Taloq"],answer:0,note:""},
- {subject:"Anatomiya",q:"Ingichka ichakning birinchi bo'limi qaysi?",options:["O'n ikki barmoqli ichak","Och ichak","Yonbosh ichak","Ko'r ichak"],answer:0,note:"Duodenum → jejunum → ileum."},
- {subject:"Anatomiya",q:"Yurak nechta kameradan iborat?",options:["4","2","3","5"],answer:0,note:"Ikki bo'lmacha va ikki qorincha."},
- {subject:"Anatomiya",q:"Qovurg'alar odatda necha juft bo'ladi?",options:["12","10","14","7"],answer:0,note:""},
- {subject:"Biologiya",q:"Hujayraning \"energiya stansiyasi\" deb qaysi organoidga aytiladi?",options:["Mitoxondriya","Ribosoma","Lizosoma","Goldji apparati"],answer:0,note:"Mitoxondriyada ATF sintezlanadi."},
- {subject:"Biologiya",q:"Odamning somatik hujayralarida nechta xromosoma bor?",options:["46","23","44","48"],answer:0,note:"23 juft, jami 46 ta."},
- {subject:"Biologiya",q:"Oqsil sintezi hujayraning qaysi qismida boradi?",options:["Ribosomalarda","Yadrochada","Lizosomalarda","Hujayra markazida"],answer:0,note:""},
- {subject:"Biologiya",q:"Qonning kislorod tashuvchi oqsili qaysi?",options:["Gemoglobin","Albumin","Fibrinogen","Mioglobin"],answer:0,note:""},
- {subject:"Lotin tili",q:"\"Hepar\" so'zining ma'nosi nima?",options:["Jigar","Yurak","Buyrak","O'pka"],answer:0,note:""},
- {subject:"Lotin tili",q:"\"Dexter\" so'zi qanday tarjima qilinadi?",options:["O'ng","Chap","Yuqori","Pastki"],answer:0,note:"Sinister — chap."},
- {subject:"Lotin tili",q:"\"Os\" so'zining ko'plik shakli qaysi?",options:["ossa","osi","oses","ossis"],answer:0,note:"os — ossis (Gen. sing.), ossa — ko'plik."},
- {subject:"Lotin tili",q:"Retseptdagi \"Rp.\" qisqartmasi nimani anglatadi?",options:["Recipe — ol","Repete — takrorla","Remedium — dori","Ratio — nisbat"],answer:0,note:""}
-];
-STARTER.forEach((q,i)=>{q.id="s"+i; q.starter=true});
-
+/* Savollar banki qb/*.js fayllarida (window.QB) */
+const SUBJECTS = QB.order.map(k=>QB.subj[k].name);
 
 const ROSTER=[{"id": "st01", "order": 1, "name": "Jo‘rayev Axrorbek Abdikaxxor o‘g‘li", "birth": "01.01.1994", "region": "Termiz tumani", "home": true, "admin": true, "photo": "photos/st01.jpg"}, {"id": "st02", "order": 2, "name": "Bozorov Diyorbek O‘ral o‘g‘li", "birth": "02.11.2008", "region": "Termiz shahri", "home": true, "admin": false, "photo": "photos/st02.jpg"}, {"id": "st03", "order": 3, "name": "Jo‘rayev Javoxir Abdukaxxorovich", "birth": "22.01.2008", "region": "Termiz tumani", "home": true, "admin": false, "photo": "photos/st03.jpg"}, {"id": "st04", "order": 4, "name": "Kenjayeva Sevinch Hazratqul qizi", "birth": "04.09.2007", "region": "Jarqo'rg'on tumani", "home": true, "admin": false, "photo": "photos/st04.jpg"}, {"id": "st05", "order": 5, "name": "Shokirova Ruxsora Baxrom qizi", "birth": "27.11.2008", "region": "Termiz tumani", "home": true, "admin": false, "photo": "photos/st05.jpg"}, {"id": "st06", "order": 6, "name": "Tog‘ayeva Dilrabo Shavkat qizi", "birth": "01.07.2008", "region": "Jarqo'rg'on tumani", "home": true, "admin": false, "photo": "photos/st06.jpg"}, {"id": "st07", "order": 7, "name": "Ramazonova Gulnoza Abdurahmon qizi", "birth": "11.11.2008", "region": "Jarqo'rg'on tumani", "home": true, "admin": false, "photo": "photos/st07.jpg"}, {"id": "st08", "order": 8, "name": "Otamurodova Mahliyo Zokirovna", "birth": "23.06.2005", "region": "Termiz shahri", "home": true, "admin": false, "photo": "photos/st08.jpg"}, {"id": "st09", "order": 9, "name": "Shosaidova Mushtariy Jo‘ra qizi", "birth": "12.06.2001", "region": "Termiz tumani", "home": true, "admin": false, "photo": "photos/st09.jpg"}, {"id": "st10", "order": 10, "name": "Usmonova Aziza Olimovna", "birth": "02.05.2008", "region": "Termiz shahri", "home": true, "admin": false, "photo": "photos/st10.jpg"}, {"id": "st11", "order": 11, "name": "Jabborova Rayxona", "birth": "11.05.2008", "region": "Termiz shahri", "home": true, "admin": false, "photo": "photos/st11.jpg"}, {"id": "st12", "order": 12, "name": "Abdiraxmonov Azizbek Rustam o‘g‘li", "birth": "16.06.2008", "region": "Qiziriq tumani", "home": false, "admin": false, "photo": "photos/st12.jpg"}, {"id": "st13", "order": 13, "name": "Abdug‘afforov Aliakbar O‘ral o‘g‘li", "birth": "27.04.2008", "region": "Sho'rchi tumani", "home": false, "admin": false, "photo": "photos/st13.jpg"}, {"id": "st14", "order": 14, "name": "Abdurahmonova Shoira Muzaffar qizi", "birth": "25.02.2008", "region": "Sho'rchi tumani", "home": false, "admin": false, "photo": "photos/st14.jpg"}, {"id": "st15", "order": 15, "name": "Allamuratova Gulsevar Jumanazar qizi", "birth": "21.02.2007", "region": "Jarqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st15.jpg"}, {"id": "st16", "order": 16, "name": "G‘aniyev Diyorbek Davron o‘g‘li", "birth": "05.02.2003", "region": "Muzrabot tumani", "home": false, "admin": false, "photo": "photos/st16.jpg"}, {"id": "st17", "order": 17, "name": "Hikmatulloyev Akobir Boburjon o‘g‘li", "birth": "26.09.2008", "region": "Sariosiyo tumani", "home": false, "admin": false, "photo": "photos/st17.jpg"}, {"id": "st18", "order": 18, "name": "Ibraximova Mahliyo Sobir qizi", "birth": "09.08.2007", "region": "Qumqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st18.jpg"}, {"id": "st19", "order": 19, "name": "Mo‘ydinova Dinora Jamshid qizi", "birth": "26.09.2008", "region": "Sherobod tumani", "home": false, "admin": false, "photo": "photos/st19.jpg"}, {"id": "st20", "order": 20, "name": "Shaydulova Muborak Hamza qizi", "birth": "24.09.2008", "region": "Jarqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st20.jpg"}, {"id": "st21", "order": 21, "name": "Shoimova Go‘zal Abdunazar qizi", "birth": "01.03.2008", "region": "Jarqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st21.jpg"}, {"id": "st22", "order": 22, "name": "Soatmuratova Nigina Dilmurot qizi", "birth": "05.02.2008", "region": "Qumqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st22.jpg"}, {"id": "st23", "order": 23, "name": "Umarov Zohid Zafar o‘g‘li", "birth": "04.08.2008", "region": "Denov tumani", "home": false, "admin": false, "photo": "photos/st23.jpg"}, {"id": "st24", "order": 24, "name": "Xamzayeva Sitora Abdujabbor qizi", "birth": "17.12.2007", "region": "Jarqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st24.jpg"}, {"id": "st25", "order": 25, "name": "Arziqulov Qobilbek Bahrom o‘g‘li", "birth": "08.09.2002", "region": "Samarqand viloyati, Ishtihon tumani", "home": false, "admin": false, "photo": "photos/st25.jpg"}, {"id": "st26", "order": 26, "name": "Qo‘yboqova Fotima G‘affor qizi", "birth": "17.06.2008", "region": "Oltinsoy tumani", "home": false, "admin": false, "photo": "photos/st26.jpg"}, {"id": "st27", "order": 27, "name": "Qurbonova Gulsevar Baxromovna", "birth": "11.03.2008", "region": "Angor tumani", "home": false, "admin": false, "photo": "photos/st27.jpg"}, {"id": "st28", "order": 28, "name": "Shaymardonov Shohruh Shamsiddinovich", "birth": "26.07.2008", "region": "Uzun tumani", "home": false, "admin": false, "photo": "photos/st28.jpg"}, {"id": "st29", "order": 29, "name": "Choriyeva Mexriniso Komil qizi", "birth": "15.08.2008", "region": "Muzrabot tumani", "home": false, "admin": false, "photo": "photos/st29.jpg"}, {"id": "st30", "order": 30, "name": "Raimova Dildora Bohodirovna", "birth": "28.02.2007", "region": "Jarqo'rg'on tumani", "home": false, "admin": false, "photo": "photos/st30.jpg"}];
 /* ---------------- Dars jadvali: Davolash 26-39 ---------------- */
@@ -435,14 +419,13 @@ const store = {
 };
 const COLORS=["#C42847","#2D63A6","#1E8A55","#B0660C","#5B4BC4","#0E8C8C","#A0408A","#566B1F"];
 const colorFor=id=>COLORS[[...String(id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%COLORS.length];
-const SUBJ_KEY={"Anatomiya":"anat","Biologiya":"bio","Lotin tili":"til","Kimyo":"kim","Boshqa":"kasb"};
 
 /* ---------------- Holat ---------------- */
 const S = {
   db:null, user:null, uid:null, me:null,
   shared:[], scores:[], names:{},
-  day:null, cards:{cat:"all", order:[], i:0, flipped:false},
-  quiz:null, known:new Set(store.get("known",[])),
+  day:null, cards:{subj:store.get("cards-subj","anat"), topic:"all", order:[], i:0, flipped:false},
+  quiz:null, tnav:{subj:null}, known:new Set(store.get("known2",[])),
   isOwner:false, students:[], studentsReady:false, homework:[], materials:[], openSt:null, q:"",
   assets:null, downloads:null
 };
@@ -531,98 +514,160 @@ function heroCard(l,label,live){
   </div>`;
 }
 
-/* ---------------- 1. Atamalar ---------------- */
-function deck(){ return TERMS.map((t,i)=>({i,cat:t[0],la:t[1],uz:t[2]})).filter(t=>S.cards.cat==="all"||t.cat===S.cards.cat); }
-function resetDeck(){ const d=deck(); const unknown=d.filter(t=>!S.known.has(t.la)); const pool=unknown.length?unknown:d;
-  S.cards.order=shuffle(pool).map(t=>t.i); S.cards.i=0; S.cards.flipped=false; }
+/* ---------------- 1. Atamalar (kartochkalar) ---------------- */
+function termLabelUz(s){ return s.termLabel==="Lotincha"?"o'zbekcha nomi":s.termLabel==="Inglizcha"?"o'zbekcha tarjimasi":"ma'nosi"; }
+function termPool(sk,topic){ const s=QB.subj[sk]; const tps=topic==="all"?s.topics:s.topics.filter(t=>String(t.n)===String(topic));
+  const out=[]; tps.forEach(t=>t.terms.forEach(r=>out.push({la:r[0],uz:r[1],tn:t.n}))); return out; }
+function resetDeck(){ const d=termPool(S.cards.subj,S.cards.topic); const unknown=d.filter(t=>!S.known.has(S.cards.subj+"|"+t.la)); const pool=unknown.length?unknown:d;
+  S.cards.order=shuffle(pool).map(t=>t.la); S.cards.i=0; S.cards.flipped=false; }
 function viewTerms(){
+  const sk=S.cards.subj, s=QB.subj[sk];
   if(!S.cards.order.length) resetDeck();
-  const d=deck(); const known=d.filter(t=>S.known.has(t.la)).length;
-  const t=TERMS[S.cards.order[S.cards.i]]; const no=String(S.cards.order[S.cards.i]+1).padStart(3,"0");
-  const catBtns=[["all","Hammasi",TERMS.length],...Object.entries(CATS).map(([k,v])=>[k,v,TERMS.filter(x=>x[0]===k).length])]
-    .map(([k,v,n])=>`<button class="chip" data-cat="${k}" aria-pressed="${S.cards.cat===k}">${v}<span class="n">${n}</span></button>`).join("");
+  const d=termPool(sk,S.cards.topic); const known=d.filter(t=>S.known.has(sk+"|"+t.la)).length;
+  const t=d.find(x=>x.la===S.cards.order[S.cards.i])||d[0];
+  const subjBtns=QB.order.map(k=>`<button class="chip" data-cs="${k}" aria-pressed="${k===sk}">${esc(QB.subj[k].name.split(".")[0].replace(/ \(.*/,""))}</button>`).join("");
+  const topicBtns=[`<button class="chip" data-ct="all" aria-pressed="${S.cards.topic==="all"}">Hammasi<span class="n">${termPool(sk,"all").length}</span></button>`,
+    ...s.topics.filter(tp=>tp.terms.length).map(tp=>`<button class="chip" data-ct="${tp.n}" aria-pressed="${String(S.cards.topic)===String(tp.n)}">${tp.n}-mavzu<span class="n">${tp.terms.length}</span></button>`)].join("");
+  const tp=s.topics.find(x=>x.n===t.tn);
   $("#view").innerHTML=`
-    <div class="titlebar"><h1>Lotincha atamalar</h1>
-      <p class="lede">Kartani bosing — tarjimasi ochiladi. Bilganlaringizni belgilang, qolganlari qayta chiqadi.</p></div>
-    <div class="chips" role="group" aria-label="Bo'lim">${catBtns}</div>
+    <div class="titlebar"><h1>Atamalar</h1>
+      <p class="lede">Kartani bosing — tarjimasi ochiladi. "Bilaman" desangiz, karta kamroq chiqadi.</p></div>
+    <div class="chips" role="group" aria-label="Fan">${subjBtns}</div>
+    <div class="chips" role="group" aria-label="Mavzu">${topicBtns}</div>
     <button class="specimen ${S.cards.flipped?"flipped":""}" id="card" aria-label="Kartani ochish">
-      <div class="top"><span>No. ${no}</span><span class="cat">${t[0]} · ${CATS[t[0]]}</span></div>
-      <div class="latin">${esc(t[1])}</div>
-      <div><div class="uz ${S.cards.flipped?"":"hidden"}">${S.cards.flipped?esc(t[2]):"&nbsp;"}</div>
-        <div class="hint">Tarjimani ko'rish uchun bosing</div></div>
+      <div class="top"><span>${esc(s.termLabel)}</span><span class="cat">${tp?tp.n+"-mavzu":""}</span></div>
+      <div class="latin ${s.termLabel==="Lotincha"?"":"plain"}">${esc(t.la)}</div>
+      <div><div class="uz ${S.cards.flipped?"":"hidden"}">${S.cards.flipped?esc(t.uz):"&nbsp;"}</div>
+        <div class="hint">${tp?esc(tp.t):""}</div></div>
     </button>
     <div class="row"><button class="btn" id="again">Yana takrorlayman</button><button class="btn primary" id="know">Bilaman</button></div>
     <div class="progress"><span>${known}/${d.length} yodlandi</span><div class="bar"><i style="width:${d.length?known/d.length*100:0}%"></i></div>
       <button class="btn ghost" id="resetKnown" style="padding:4px 8px;font-size:12px">Nolga</button></div>
-    `;
-  document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{S.cards.cat=b.dataset.cat;resetDeck();viewTerms();});
+    <a class="btn vein" href="#test" id="toTest" style="text-align:center;text-decoration:none">Shu atamalardan test ishlash</a>`;
+  document.querySelectorAll("[data-cs]").forEach(b=>b.onclick=()=>{S.cards.subj=b.dataset.cs;S.cards.topic="all";store.set("cards-subj",S.cards.subj);resetDeck();viewTerms();});
+  document.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>{S.cards.topic=b.dataset.ct;resetDeck();viewTerms();});
   $("#card").onclick=()=>{S.cards.flipped=!S.cards.flipped;viewTerms();};
   const next=()=>{ S.cards.i++; S.cards.flipped=false; if(S.cards.i>=S.cards.order.length) resetDeck(); viewTerms(); };
-  $("#know").onclick=()=>{S.known.add(t[1]);store.set("known",[...S.known]);next();};
+  $("#know").onclick=()=>{S.known.add(sk+"|"+t.la);store.set("known2",[...S.known]);srMark(sk+"|t|"+t.la,true);next();};
   $("#again").onclick=next;
-  $("#resetKnown").onclick=()=>{d.forEach(x=>S.known.delete(x.la));store.set("known",[...S.known]);resetDeck();viewTerms();};
+  $("#resetKnown").onclick=()=>{d.forEach(x=>S.known.delete(sk+"|"+x.la));store.set("known2",[...S.known]);resetDeck();viewTerms();};
+  $("#toTest").onclick=e=>{ e.preventDefault(); location.hash="#test"; setTimeout(()=>startQuiz("t",sk,S.cards.topic),0); };
 }
 
-/* ---------------- 2. Test ---------------- */
-function bank(){ return STARTER.concat(S.shared); }
-function latinQuiz(n){
-  return shuffle(TERMS).slice(0,n).map((t,i)=>{
-    const wrong=shuffle(TERMS.filter(x=>x[2]!==t[2]&&x[0]===t[0])).slice(0,3).map(x=>x[2]);
-    const opts=shuffle([t[2],...wrong]);
-    return {id:"lat"+i,subject:"Lotincha atamalar",q:`<em>${esc(t[1])}</em> — tarjimasi qaysi?`,html:true,options:opts,answer:opts.indexOf(t[2]),note:`${t[1]} — ${t[2]}`};
-  });
+/* ---------------- 2. Test: takrorlash (Leitner) ---------------- */
+const SR=store.get("sr",{});
+let srTimer=null;
+function srSave(){ clearTimeout(srTimer); srTimer=setTimeout(()=>store.set("sr",SR),300); }
+function srMark(key,ok){ const st=SR[key]||[0,0]; SR[key]=[ok?Math.min(5,st[0]+1):0,Date.now()]; srSave(); }
+function srPick(items,n){
+  const now=Date.now();
+  return items.map(it=>{ const st=SR[it.key]; const b=st?st[0]:-1; const days=st?(now-st[1])/864e5:99;
+      return {it,p:b*2+Math.random()*2.5-Math.min(2.5,days/(1+Math.max(b,0)))}; })
+    .sort((a,b)=>a.p-b.p).slice(0,n).map(x=>x.it);
 }
-function startQuiz(subject){
-  let qs;
-  if(subject==="__lat") qs=latinQuiz(10);
-  else qs=shuffle(bank().filter(q=>subject==="__all"||q.subject===subject)).slice(0,10).map(q=>{
-    const idx=shuffle(q.options.map((o,i)=>i).filter(i=>q.options[i]!=null&&q.options[i]!==""));
-    return {...q,options:idx.map(i=>q.options[i]),answer:idx.indexOf(q.answer)};
-  });
-  if(!qs.length) return;
-  S.quiz={subject,qs,i:0,correct:0,picked:null,done:false,saved:null};
-  viewTest();
+const mastered=keys=>keys.filter(k=>SR[k]&&SR[k][0]>=3).length;
+const QN=15;
+const LEGACY={"Anatomiya":"anat","Biologiya":"bio","Lotin tili":"anat","Kimyo":"kim","Boshqa":"kasb"};
+const subjKeyOf=name=>LEGACY[name]||QB.order.find(k=>QB.subj[k].name===name||k===name)||"kasb";
+function termItems(sk,topic){ return termPool(sk,topic).map(t=>({kind:"t",sk,tn:t.tn,la:t.la,uz:t.uz,key:sk+"|t|"+t.la})); }
+function qItems(sk,topic){ const s=QB.subj[sk]; const out=[];
+  s.topics.forEach(tp=>{ if(topic!=="all"&&String(tp.n)!==String(topic)) return; tp.qs.forEach(r=>out.push({kind:"q",sk,tn:tp.n,r,key:sk+"|q|"+r[0]})); });
+  if(topic==="all"||topic==="shared") S.shared.filter(q=>subjKeyOf(q.subject)===sk).forEach(q=>out.push({kind:"s",sk,q,key:"sh|"+q.id}));
+  if(topic==="shared") return out.filter(x=>x.kind==="s");
+  return out; }
+function buildQ(it){
+  const s=QB.subj[it.sk];
+  if(it.kind==="t"){
+    const tp=s.topics.find(x=>x.n===it.tn); let pool=tp.terms.filter(r=>r[0]!==it.la);
+    if(pool.length<3) pool=pool.concat(s.topics.flatMap(x=>x.terms).filter(r=>r[0]!==it.la));
+    const fwd=Math.random()<.6; const ans=fwd?it.uz:it.la; const seen=new Set([ans]); const wrong=[];
+    for(const r of shuffle(pool)){ const v=fwd?r[1]:r[0]; if(!seen.has(v)){ seen.add(v); wrong.push(v); } if(wrong.length===3) break; }
+    const opts=shuffle([ans,...wrong]);
+    const q=fwd?`<em class="${s.termLabel==="Lotincha"?"":"plain"}">${esc(it.la)}</em> — ${termLabelUz(s)} qaysi?`
+               :`<b>«${esc(it.uz)}»</b> — ${s.termLabel==="Lotincha"?"lotincha nomi":s.termLabel==="Inglizcha"?"inglizcha nomi":"qaysi atama"}${s.termLabel==="Lotincha"||s.termLabel==="Inglizcha"?" qaysi?":"?"}`;
+    return {key:it.key,label:`${s.name.split(".")[0]} · ${tp.n}-mavzu atamasi`,q,html:true,options:opts,answer:opts.indexOf(ans),note:`${it.la} — ${it.uz}`};
+  }
+  if(it.kind==="q"){
+    const r=it.r; const opts=shuffle(r.slice(1,5).filter(Boolean));
+    return {key:it.key,label:`${s.name.split(".")[0]} · ${it.tn}-mavzu`,q:r[0],options:opts,answer:opts.indexOf(r[1]),note:r[5]||""};
+  }
+  const q=it.q; const idx=shuffle(q.options.map((o,i)=>i).filter(i=>q.options[i]!=null&&q.options[i]!==""));
+  return {key:it.key,label:`${s.name.split(".")[0]} · kursdosh savoli`,q:q.q,options:idx.map(i=>q.options[i]),answer:idx.indexOf(q.answer),note:q.note||""};
+}
+function startQuiz(kind,sk,topic){
+  const items=kind==="t"?termItems(sk,topic):qItems(sk,topic);
+  if(!items.length) return;
+  const qs=shuffle(srPick(items,QN)).map(buildQ);
+  const s=QB.subj[sk];
+  const title=(kind==="t"?"Atamalar":"Mavzuga oid test")+" · "+(topic==="all"?"barcha mavzular":topic==="shared"?"kursdoshlar savollari":topic+"-mavzu");
+  S.quiz={kind,sk,topic,title,subjName:s.name,qs,i:0,correct:0,picked:null,done:false,saved:null,wrong:[]};
+  S.tnav.subj=sk; viewTest();
+}
+function rowBtn(attr,title,sub,keys,sc){
+  const m=mastered(keys), n=keys.length;
+  return `<button class="trow" ${attr} style="--sc:${sc}"><span class="tt"><b>${title}</b><small>${sub}</small>
+    <span class="tbar"><i style="width:${n?m/n*100:0}%"></i></span></span><span class="tgo">${n?Math.round(m/n*100):0}%</span></button>`;
 }
 function viewTest(){
   const z=S.quiz;
-  if(!z){
-    const b=bank(); const counts={}; b.forEach(q=>counts[q.subject]=(counts[q.subject]||0)+1);
-    const tiles=[`<button class="subj lat" data-s="__lat" style="--sc:var(--c-anat)"><span class="ic">La</span><b>Lotincha atamalar</b><small>${TERMS.length} ta atama</small></button>`,
-      `<button class="subj" data-s="__all" style="--sc:var(--vein)"><span class="ic">∑</span><b>Aralash test</b><small>${b.length} ta savol</small></button>`,
-      ...SUBJECTS.filter(s=>counts[s]).map(s=>`<button class="subj" data-s="${esc(s)}" style="--sc:${SC[SUBJ_KEY[s]]}"><span class="ic">${esc(s[0])}</span><b>${esc(s)}</b><small>${counts[s]} ta savol</small></button>`)].join("");
-    $("#view").innerHTML=`
-      <div class="titlebar"><h1>Test</h1><p class="lede">Fanni tanlang — 10 ta savol. To'g'ri javoblar reytingdagi ballingizga qo'shiladi.</p></div>
-      <div class="subjects">${tiles}</div>${statusNote()}`;
-    document.querySelectorAll("[data-s]").forEach(el=>el.onclick=()=>startQuiz(el.dataset.s));
-    return;
-  }
-  if(z.done){
+  if(z&&z.done){
     const pct=Math.round(z.correct/z.qs.length*100);
     $("#view").innerHTML=`
       <div class="card result">
-        <h2>${esc(z.subject==="__lat"?"Lotincha atamalar":z.subject==="__all"?"Aralash test":z.subject)}</h2>
+        <h2>${esc(z.subjName)}</h2><p class="lede" style="margin-top:-6px">${esc(z.title)}</p>
         <div class="big">${z.correct}<small> / ${z.qs.length}</small></div>
-        <p>${pct>=80?"A'lo natija! Shu ruhda davom eting.":pct>=50?"Yaxshi. Xato qilgan savollaringizni qayta ko'rib chiqing.":"Yana bir bor urinib ko'ring — takrorlash yodlashning onasi."}</p>
-        <p class="lede" id="saveMsg">${z.saved===true?`+${z.correct} ball reytingga qo'shildi.`:z.saved===false?"Ball saqlanmadi: reyting faqat Claude hisobiga kirganlar uchun ishlaydi.":"Ball saqlanmoqda…"}</p>
-        <div class="row" style="width:100%"><button class="btn" id="back">Fanlar</button><button class="btn primary" id="again">Yana 10 ta savol</button></div>
-      </div>`;
+        <p>${pct>=80?"A'lo natija! Shu ruhda davom eting.":pct>=50?"Yaxshi. Xato qilgan savollaringiz keyingi testlarda yana chiqadi.":"Yana urinib ko'ring — xato qilingan savollar qayta-qayta chiqib, yodda qoladi."}</p>
+        <p class="lede" id="saveMsg">${z.saved===true?`+${z.correct} ball reytingga qo'shildi.`:z.saved===false?"Ball saqlanmadi: reyting faqat tasdiqlangan foydalanuvchilar uchun.":"Ball saqlanmoqda…"}</p>
+        <div class="row" style="width:100%"><button class="btn" id="back">Mavzular</button><button class="btn primary" id="again">Yana ${QN} ta savol</button></div>
+      </div>
+      ${z.wrong.length?`<div class="sec"><h2>Xatolar ustida ishlash · ${z.wrong.length}</h2><div class="card list wrongs">${z.wrong.map(w=>`<div class="li"><div class="t"><div>${w.html?w.q:esc(w.q)}</div><small>To'g'ri javob: <b style="color:var(--ok)">${esc(w.options[w.answer])}</b>${w.note&&!w.note.includes(w.options[w.answer])?" · "+esc(w.note):""}</small></div></div>`).join("")}</div></div>`:""}`;
     $("#back").onclick=()=>{S.quiz=null;viewTest();};
-    $("#again").onclick=()=>startQuiz(z.subject);
+    $("#again").onclick=()=>startQuiz(z.kind,z.sk,z.topic);
     return;
   }
-  const q=z.qs[z.i]; const answered=z.picked!=null;
+  if(z){
+    const q=z.qs[z.i]; const answered=z.picked!=null;
+    $("#view").innerHTML=`
+      <div class="qhead"><span>${esc(q.label)}</span><span class="sc">${z.i+1}/${z.qs.length} · ✓${z.correct}</span></div>
+      <div class="bar"><i style="width:${z.i/z.qs.length*100}%"></i></div>
+      <div class="qtext">${q.html?q.q:esc(q.q)}</div>
+      <div class="opts">${q.options.map((o,i)=>{
+        let cls=""; if(answered){ if(i===q.answer) cls="right"; else if(i===z.picked) cls="wrong"; }
+        return `<button class="opt ${cls}" data-i="${i}" ${answered?"disabled":""}><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`;}).join("")}</div>
+      ${answered&&q.note&&q.note!==q.options[q.answer]?`<p class="explain">${esc(q.note)}</p>`:""}
+      ${answered?`<button class="btn vein" id="next">${z.i+1<z.qs.length?"Keyingi savol":"Natijani ko'rish"}</button>`:`<button class="btn ghost" id="quit">Testni to'xtatish</button>`}`;
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(z.picked!=null) return; z.picked=+b.dataset.i; const ok=z.picked===q.answer;
+      if(ok) z.correct++; else z.wrong.push(q); srMark(q.key,ok); viewTest(); });
+    if(answered) $("#next").onclick=()=>{ z.i++; z.picked=null; if(z.i>=z.qs.length){ z.done=true; saveScore(z); } viewTest(); };
+    else $("#quit").onclick=()=>{S.quiz=null;viewTest();};
+    return;
+  }
+  const sk=S.tnav.subj;
+  if(sk&&QB.subj[sk]){
+    const s=QB.subj[sk], sc=SC[sk];
+    const tAll=termItems(sk,"all").map(x=>x.key), qAll=qItems(sk,"all").map(x=>x.key);
+    const shared=qItems(sk,"shared");
+    $("#view").innerHTML=`
+      <a class="back" href="#test" id="tback"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m15 6-6 6 6 6"/></svg>Fanlar</a>
+      <div class="titlebar"><h1>${esc(s.name)}</h1><p class="lede">${tAll.length} ta atama · ${qAll.length} ta savol. Har bir testda ${QN} ta savol; xato qilinganlar tez-tez, yaxshi bilinganlari kamroq chiqadi. Foiz — o'zlashtirilgan qism.</p></div>
+      <div class="sec"><h2>1. Atamalar${s.termLabel==="Lotincha"?" (lotincha — o'zbekcha)":s.termLabel==="Inglizcha"?" (inglizcha — o'zbekcha)":""}</h2>
+        <div class="card list tlist">${rowBtn(`data-go="t:all"`,"Barcha atamalar (aralash)",`${tAll.length} ta atama`,tAll,sc)}
+          ${s.topics.filter(t=>t.terms.length).map(t=>rowBtn(`data-go="t:${t.n}"`,`${t.n}-mavzu atamalari`,`${esc(t.t)} · ${t.terms.length} ta`,termItems(sk,t.n).map(x=>x.key),sc)).join("")}</div></div>
+      <div class="sec"><h2>2. Mavzuga oid testlar</h2>
+        <div class="card list tlist">${rowBtn(`data-go="q:all"`,"Barcha mavzular (aralash)",`${qAll.length} ta savol`,qAll,sc)}
+          ${s.topics.filter(t=>t.qs.length).map(t=>rowBtn(`data-go="q:${t.n}"`,`${t.n}-mavzu`,`${esc(t.t)} · ${t.qs.length} ta`,qItems(sk,t.n).map(x=>x.key),sc)).join("")}
+          ${shared.length?rowBtn(`data-go="q:shared"`,"Kursdoshlar savollari",`${shared.length} ta savol`,shared.map(x=>x.key),sc):""}</div></div>`;
+    $("#tback").onclick=e=>{e.preventDefault();S.tnav.subj=null;viewTest();};
+    document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{ const [k,t]=b.dataset.go.split(":"); startQuiz(k,sk,t); });
+    return;
+  }
+  const tiles=QB.order.map(k=>{ const s=QB.subj[k]; const keys=termItems(k,"all").map(x=>x.key).concat(qItems(k,"all").map(x=>x.key)); const m=mastered(keys);
+    return `<button class="subj" data-s="${k}" style="--sc:${SC[k]}"><span class="ic">${SUBJ_IC[k]}</span><b>${esc(s.name)}</b><small>${termItems(k,"all").length} atama · ${qItems(k,"all").length} savol</small>
+      <span class="tbar"><i style="width:${keys.length?m/keys.length*100:0}%"></i></span></button>`; }).join("");
   $("#view").innerHTML=`
-    <div class="qhead"><span>${esc(q.subject)}${q.author?" · kursdosh savoli":""}</span><span class="sc">${z.i+1}/${z.qs.length} · ✓${z.correct}</span></div>
-    <div class="bar"><i style="width:${z.i/z.qs.length*100}%"></i></div>
-    <div class="qtext">${q.html?q.q:esc(q.q)}</div>
-    <div class="opts">${q.options.map((o,i)=>{
-      let cls=""; if(answered){ if(i===q.answer) cls="right"; else if(i===z.picked) cls="wrong"; }
-      return `<button class="opt ${cls}" data-i="${i}" ${answered?"disabled":""}><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`;}).join("")}</div>
-    ${answered&&q.note?`<p class="explain">${esc(q.note)}</p>`:""}
-    ${answered?`<button class="btn vein" id="next">${z.i+1<z.qs.length?"Keyingi savol":"Natijani ko'rish"}</button>`:`<button class="btn ghost" id="quit">Testni to'xtatish</button>`}`;
-  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ if(z.picked!=null) return; z.picked=+b.dataset.i; if(z.picked===q.answer) z.correct++; viewTest(); });
-  if(answered) $("#next").onclick=()=>{ z.i++; z.picked=null; if(z.i>=z.qs.length){ z.done=true; saveScore(z); } viewTest(); };
-  else $("#quit").onclick=()=>{S.quiz=null;viewTest();};
+    <div class="titlebar"><h1>Testlar</h1><p class="lede">Fanni tanlang. Ichida atamalar va har bir mavzu bo'yicha alohida testlar bor. To'g'ri javoblar reytingdagi ballingizga qo'shiladi.</p></div>
+    <div class="subjects">${tiles}</div>${statusNote()}`;
+  document.querySelectorAll("[data-s]").forEach(el=>el.onclick=()=>{ S.tnav.subj=el.dataset.s; viewTest(); $("#main").scrollTop=0; });
 }
 async function saveScore(z){
   if(!S.db||!S.uid){ z.saved=false; return; }
@@ -638,7 +683,7 @@ async function saveScore(z){
 /* ---------------- 3. Savol qo'shish ---------------- */
 function viewAdd(){
   const mine=S.shared.filter(q=>q.author===S.uid);
-  const draft=store.get("draft",{subject:"Anatomiya",q:"",options:["","","",""],answer:0,note:""});
+  const draft=store.get("draft",{subject:SUBJECTS[0],q:"",options:["","","",""],answer:0,note:""});
   $("#view").innerHTML=`
     <div class="titlebar"><h1>Savol qo'shish</h1><p class="lede">Qo'shgan savolingiz darhol butun guruhning test bankiga tushadi. To'g'ri javobni belgilashni unutmang.</p></div>
     ${S.db?"":statusNote()}
@@ -864,7 +909,7 @@ function viewGroup(){
     <input class="search" type="search" id="g-q" placeholder="Ism, tuman yoki telefon bo'yicha qidirish" value="${esc(S.q)}" aria-label="Qidirish">
     <div class="sec"><h2>O'z uyidan qatnaydiganlar · ${home.length}</h2><div class="card list">${home.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
     <div class="sec"><h2>Ijarada turadiganlar · ${rent.length}</h2><div class="card list">${rent.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
-    ${S.uid?`<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
+    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button><button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ S.openSt=S.openSt===b.dataset.st?null:b.dataset.st; viewGroup(); });
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Nusxa olindi"; }catch(e){ b.textContent=b.dataset.copy; } });
   const g=$("#g-q"); g.oninput=()=>{ S.q=g.value; const pos=g.selectionStart; viewGroup(); const n=$("#g-q"); n.focus(); try{n.setSelectionRange(pos,pos)}catch(e){} };
@@ -959,8 +1004,8 @@ S.user = { profiles: async ids => Object.fromEntries((Array.isArray(ids) ? ids :
 
 onAuthStateChanged(auth, async u => {
   stopAll(); S.db = null; S.uid = null; S.isOwner = false; S.me = null; S.pending = [];
-  if (!u) { $("#who").textContent = "Davolash ishi · 1-kurs"; render(); showGate("login"); return; }
-  gate.hidden = true; S.uid = u.uid; S.isOwner = (u.email || "").toLowerCase() === ADMIN_EMAIL;
+  if (!u) { pinRequire(null); $("#who").textContent = "Davolash ishi · 1-kurs"; render(); showGate("login"); return; }
+  gate.hidden = true; S.uid = u.uid; pinRequire(u.uid); S.isOwner = (u.email || "").toLowerCase() === ADMIN_EMAIL;
   // profil (ism, tasdiq)
   unsubs.push(onSnapshot(doc(fs, "users/" + u.uid), snap => {
     const me = snap.exists() ? snap.data() : null; S.me = me;
@@ -1048,6 +1093,74 @@ window.fileOpen = async (m, prog) => {
   a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 };
+
+
+/* ---------- PIN-kod qulfi (har bir qurilmada, har bir foydalanuvchi uchun) ---------- */
+const pinBox = document.createElement("div"); pinBox.className = "pinlock"; pinBox.hidden = true; document.body.appendChild(pinBox);
+const pinHash = async (uid, pin) => { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("d2639|" + uid + "|" + pin));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); };
+const PIN = { uid: null, mode: null, buf: "", first: "", tries: 0, hiddenAt: 0 };
+const pinStored = uid => store.get("pin:" + uid, null);
+function pinOpen(mode) { PIN.mode = mode; PIN.buf = ""; if (mode !== "confirm") PIN.first = ""; pinBox.hidden = false; pinDraw(); }
+function pinClose() { pinBox.hidden = true; PIN.mode = null; PIN.buf = ""; }
+function pinDraw(msg, bad) {
+  const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
+  const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
+  if (PIN.mode === "forgot") {
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><h2>${t}</h2>
+      <p class="lede">Hisobingizdan chiqasiz. Keyin email va parolingiz bilan qayta kirib, yangi PIN-kod o'rnatasiz.<br><br>Parolni ham unutgan bo'lsangiz, kirish oynasida <b>"Parolni unutdim"</b> ni bosing — Gmail'ingizga parolni tiklash havolasi keladi.</p>
+      <button class="btn primary" id="pin-go">Davom etish</button><button class="btn ghost" id="pin-back">Orqaga</button></div>`;
+    document.getElementById("pin-go").onclick = async () => { store.set("pin:" + PIN.uid, null); pinClose(); await signOut(auth); };
+    document.getElementById("pin-back").onclick = () => pinOpen("unlock");
+    return;
+  }
+  const keys = ["1","2","3","4","5","6","7","8","9", PIN.mode === "unlock" ? "forgot" : "", "0", "del"];
+  pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div>
+    <h2>${t}</h2><p class="lede">${sub}</p>
+    <div class="pin-dots ${bad ? "shake" : ""}">${[0,1,2,3].map(i => `<i class="${i < PIN.buf.length ? "on" : ""}"></i>`).join("")}</div>
+    <p class="pin-msg ${bad ? "err" : ""}" role="status">${msg || ""}</p>
+    <div class="pin-pad">${keys.map(k => k === "" ? `<span></span>` : k === "forgot" ? `<button class="pk-t" data-k="forgot">Unutdim</button>`
+      : k === "del" ? `<button class="pk-t" data-k="del" aria-label="O'chirish">⌫</button>` : `<button class="pk" data-k="${k}">${k}</button>`).join("")}</div></div>`;
+  pinBox.querySelectorAll("[data-k]").forEach(b => b.onclick = () => pinKey(b.dataset.k));
+}
+async function pinKey(k) {
+  if (k === "forgot") { pinOpen("forgot"); return; }
+  if (k === "del") { PIN.buf = PIN.buf.slice(0, -1); pinDraw(); return; }
+  if (PIN.buf.length >= 4) return;
+  PIN.buf += k; pinDraw();
+  if (PIN.buf.length < 4) return;
+  const entered = PIN.buf;
+  if (PIN.mode === "set") { PIN.first = entered; setTimeout(() => pinOpen("confirm"), 150); return; }
+  if (PIN.mode === "confirm") {
+    if (entered !== PIN.first) { PIN.first = ""; setTimeout(() => { pinOpen("set"); pinDraw("PIN-kodlar mos kelmadi. Qaytadan o'rnating.", true); }, 150); return; }
+    store.set("pin:" + PIN.uid, await pinHash(PIN.uid, entered)); PIN.tries = 0; pinClose(); return;
+  }
+  if (PIN.mode === "unlock") {
+    if (await pinHash(PIN.uid, entered) === pinStored(PIN.uid)) { PIN.tries = 0; pinClose(); return; }
+    PIN.tries++; PIN.buf = "";
+    if (PIN.tries >= 5) { PIN.tries = 0; pinOpen("forgot"); return; }
+    pinDraw(`Noto'g'ri PIN-kod. Yana ${5 - PIN.tries} ta urinish qoldi.`, true);
+  }
+}
+function pinRequire(uid) { PIN.uid = uid; if (!uid) { pinClose(); return; } pinOpen(pinStored(uid) ? "unlock" : "set"); }
+window.appChangePin = () => { if (S.uid) { PIN.uid = S.uid; pinOpen("set"); } };
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) PIN.hiddenAt = Date.now();
+  else if (S.uid && PIN.hiddenAt && Date.now() - PIN.hiddenAt > 60000 && pinStored(S.uid) && pinBox.hidden) pinRequire(S.uid);
+});
+
+/* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
+const MIN_NATIVE_BUILD = 7;
+const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
+(async () => {
+  if (!isNative()) return;
+  let build = 0;
+  try { const App = capPlug("App"); if (App) { const info = await App.getInfo(); build = parseInt(info.build, 10) || 0; } } catch (e) {}
+  if (build >= MIN_NATIVE_BUILD) return;
+  const bar = document.createElement("div"); bar.className = "updbar";
+  bar.innerHTML = `<span><b>Yangi versiya chiqdi!</b> Ilovani yangilab oling.</span><a class="mini" href="${APK_URL}">Yangilash</a>`;
+  document.getElementById("main").prepend(bar);
+})();
 
 /* ---------- Admin: tasdiqlash va ma'lumotlarni yuklash ---------- */
 window.viewAdmin = function () {
