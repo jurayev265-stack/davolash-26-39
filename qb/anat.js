@@ -258,8 +258,8 @@ angulus sterni|to'sh burchagi
 costae|qovurg'alar
 costa|qovurg'a
 costae verae|chin qovurg'alar
-costae spuriae|soxta qovurg'alar
-costae fluctuantes|tebranuvchi (erkin) qovurg'alar
+costae spuriae|yolg'on (soxta) qovurg'alar
+costae fluctuantes|yetim (tebranuvchi) qovurg'alar
 os costale|qovurg'a suyagi
 cartilago costalis|qovurg'a tog'ayi
 caput costae|qovurg'a boshchasi
@@ -297,8 +297,8 @@ linea mediana posterior|orqa o'rta chiziq
 qs: `
 Odamda necha juft qovurg'a bor?|12|10|7|14
 Chin qovurg'alar qaysilar?|I–VII juftlar|VIII–X juftlar|XI–XII juftlar|I–X juftlar
-Soxta qovurg'alar qaysilar?|VIII–XII juftlar|I–VII juftlar|Faqat I–II juftlar|II–V juftlar
-Erkin (tebranuvchi) qovurg'alar qaysilar?|XI va XII juftlar|I va II juftlar|VIII va IX juftlar|VI va VII juftlar
+Yolg'on (soxta) qovurg'alar qaysilar?|VIII–XII juftlar|I–VII juftlar|Faqat I–II juftlar|II–V juftlar
+Yetim (tebranuvchi) qovurg'alar qaysilar?|XI va XII juftlar|I va II juftlar|VIII va IX juftlar|VI va VII juftlar
 To'sh suyagi qanday qismlardan iborat?|Dasta, tana va xanjarsimon o'simta|Boshcha, bo'yin va tana|Qanot, tana va shox|Asos, uch va tana
 To'sh burchagi sohasiga qaysi qovurg'a tog'ayi birikadi?|II qovurg'a|I qovurg'a|IV qovurg'a|VII qovurg'a
 Qovurg'a egatida nima joylashadi?|Qovurg'alararo qon tomirlar va nerv|Limfa tugunlari|Mushak paylari|Hech narsa
@@ -372,8 +372,8 @@ os scaphoideum|qayiqsimon suyak
 os lunatum|yarim oysimon suyak
 os triquetrum|uch qirrali suyak
 os pisiforme|no'xatsimon suyak
-os trapezium|katta ko'p burchakli suyak
-os trapezoideum|kichik ko'p burchakli suyak
+os trapezium|trapetsiya shaklidagi suyak (katta ko'p burchakli)
+os trapezoideum|trapetsiyasimon suyak (kichik ko'p burchakli)
 os capitatum|boshchali suyak
 os hamatum|ilmoqli suyak
 ossa metacarpi|kaft suyaklari
@@ -393,7 +393,7 @@ Yelka suyagining bilak suyagi boshchasi bilan bo'g'im hosil qiluvchi qismi?|Bosh
 Kaft usti suyaklari soni?|8|5|7|14
 Bir qo'l barmoqlarida jami nechta falanga bor?|14|15|10|12
 Bosh barmoqda nechta falanga bor?|2|3|1|4
-Kaft usti suyaklarining proksimal qatori?|Qayiqsimon, yarim oysimon, uch qirrali, no'xatsimon|Katta va kichik ko'p burchakli, boshchali, ilmoqli|Qayiqsimon, boshchali, ilmoqli, katta ko'p burchakli|Faqat no'xatsimon va ilmoqli
+Kaft usti suyaklarining proksimal qatori?|Qayiqsimon, yarim oysimon, uch qirrali, no'xatsimon|Trapetsiya shaklidagi, trapetsiyasimon, boshchali, ilmoqli|Qayiqsimon, boshchali, ilmoqli, trapetsiya shaklidagi|Faqat no'xatsimon va ilmoqli
 Kaft usti suyaklari ichida eng kattasi?|Boshchali suyak|No'xatsimon suyak|Yarim oysimon suyak|Ilmoqli suyak
 Kaft usti suyaklaridan qaysi biri sesamasimon suyak hisoblanadi?|No'xatsimon suyak|Qayiqsimon suyak|Ilmoqli suyak|Boshchali suyak
 Tirsak o'simtasi (olecranon) qaysi suyakda?|Tirsak suyagida|Bilak suyagida|Yelka suyagida|Kurakda
@@ -414,7 +414,7 @@ os coxae|chanoq suyagi
 os ilium|yonbosh suyagi
 os ischii|quymich suyagi
 os pubis|qov suyagi
-acetabulum|sirka (quymich kosasi)
+acetabulum|quymich kosasi (sirka)
 fossa acetabuli|sirka chuqurchasi
 incisura acetabuli|sirka o'ymasi
 foramen obturatum|yopqich teshik
@@ -447,7 +447,7 @@ trochanter major|katta ko'st
 trochanter minor|kichik ko'st
 linea intertrochanterica|ko'stlararo chiziq
 crista intertrochanterica|ko'stlararo qirra
-linea aspera|g'adir-budur chiziq
+linea aspera|g'adir-budur qirra (chiziq)
 tuberositas glutea|dumba g'adir-budurligi
 condylus medialis femoris|son suyagining medial do'ngligi
 condylus lateralis femoris|son suyagining lateral do'ngligi
@@ -553,7 +553,7 @@ fossa mandibularis|pastki jag' chuqurchasi
 canalis caroticus|uyqu arteriyasi kanali
 canalis facialis|yuz nervi kanali
 foramen stylomastoideum|bigiz-so'rg'ich teshigi
-os ethmoidale|g'alvirsimon suyak
+os ethmoidale|g'alvir (g'alvirsimon) suyak
 lamina cribrosa|g'alvirsimon plastinka
 crista galli|xo'roz toji
 lamina perpendicularis|perpendikulyar plastinka
