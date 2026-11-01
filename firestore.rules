@@ -48,5 +48,20 @@ service cloud.firestore {
       allow read: if approved();
       allow write: if approved() && request.auth.uid == uid;
     }
+
+    // ===== Kurator sayti (www/kurator) =====
+    // Kirish: admin va admin «Kirish ruxsati» ro'yxatiga qo'shgan emaillar.
+    function kuratorAllowed() {
+      return isAdmin() || (signedIn()
+        && exists(/databases/$(database)/documents/kurator_config/access)
+        && request.auth.token.email.lower() in get(/databases/$(database)/documents/kurator_config/access).data.emails);
+    }
+    match /kurator_config/{doc} {
+      allow read: if kuratorAllowed();
+      allow write: if isAdmin();
+    }
+    match /k_students/{id} { allow read, write: if kuratorAllowed(); }
+    match /k_att/{id} { allow read, write: if kuratorAllowed(); }
+    match /k_photos/{id} { allow read, write: if kuratorAllowed(); }
   }
 }

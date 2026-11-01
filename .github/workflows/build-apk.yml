@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - "files/**"
       - "*.md"
+      - "www/kurator/**"
   workflow_dispatch:
 
 permissions:
@@ -16,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Kurator saytini APK ichidan chiqarish (u faqat veb uchun)
+        run: rm -rf www/kurator
 
       - uses: actions/setup-node@v4
         with:
