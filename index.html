@@ -944,7 +944,7 @@ function viewGroup(){
     <input class="search" type="search" id="g-q" placeholder="Ism, tuman yoki telefon bo'yicha qidirish" value="${esc(S.q)}" aria-label="Qidirish">
     <div class="sec"><h2>O'z uyidan qatnaydiganlar · ${home.length}</h2><div class="card list">${home.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
     <div class="sec"><h2>Ijarada turadiganlar · ${rent.length}</h2><div class="card list">${rent.map(st=>stRow(st,i++)).join("")||`<div class="empty">Topilmadi</div>`}</div></div>
-    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button>${window.appBioCan&&appBioCan()?`<button class="btn" onclick="appToggleBio()">Barmoq izi / Face ID bilan kirish: ${appBioState()}</button><p class="lede" id="bio-note" style="font-size:12.5px"></p>`:""}<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
+    ${S.uid?`<button class="btn" onclick="appChangePin()">PIN-kodni o'zgartirish</button><button class="btn" onclick="appTestNotif()">Eslatma ovozini sinash</button><p class="lede" id="notif-note" style="font-size:12.5px"></p>${window.appBioCan&&appBioCan()?`<button class="btn" onclick="appToggleBio()">Barmoq izi / Face ID bilan kirish: ${appBioState()}</button><p class="lede" id="bio-note" style="font-size:12.5px"></p>`:""}<button class="btn ghost" onclick="appSignOut()">Hisobdan chiqish</button>`:`<button class="btn" onclick="appShowLogin()">Kirish</button>`}`;
   document.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{ S.openSt=S.openSt===b.dataset.st?null:b.dataset.st; viewGroup(); });
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Nusxa olindi"; }catch(e){ b.textContent=b.dataset.copy; } });
   const g=$("#g-q"); g.oninput=()=>{ S.q=g.value; const pos=g.selectionStart; viewGroup(); const n=$("#g-q"); n.focus(); try{n.setSelectionRange(pos,pos)}catch(e){} };
@@ -1247,7 +1247,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 10;
+const MIN_NATIVE_BUILD = 13;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
@@ -1404,6 +1404,19 @@ async function decryptSeed(pass) {
 
 /* ---------- Telefon eslatmalari (dars oldidan) ---------- */
 let schedTimer = null;
+window.appTestNotif = async () => {
+  const note = document.getElementById("notif-note");
+  const C = window.Capacitor; const LN = C && ((C.Plugins && C.Plugins.LocalNotifications) || (C.registerPlugin && C.registerPlugin("LocalNotifications")));
+  if (!LN) { if (note) note.textContent = "Bu faqat Android ilovada ishlaydi (iPhone veb versiyasida eslatma yo'q)."; return; }
+  try {
+    let pm = await LN.checkPermissions();
+    if (pm.display !== "granted") pm = await LN.requestPermissions();
+    if (pm.display !== "granted") { if (note) note.textContent = "Bildirishnomaga ruxsat berilmagan. Telefon sozlamalaridan ruxsat bering."; return; }
+    try { if (LN.createChannel) await LN.createChannel({ id: "vazifa_v2", name: "Dars va uyga vazifa eslatmalari", description: "Darslar va uyga vazifa haqida ovozli eslatmalar", importance: 5, visibility: 1, vibration: true, lights: true, lightColor: "#C42847" }); } catch (e) {}
+    await LN.schedule({ notifications: [{ id: 9999, title: "Sinov eslatmasi 🔔", body: "Ovoz va tebranish shunday keladi. Uyga vazifa eslatmalari ham shunday bo'ladi.", schedule: { at: new Date(Date.now() + 5000), allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" }] });
+    if (note) note.textContent = "5 soniyadan keyin sinov eslatmasi keladi. Kelmasa yoki ovozsiz bo'lsa — pastdagi maslahatni o'qing.";
+  } catch (e) { if (note) note.textContent = "Xato: " + ((e && e.message) || e); }
+};
 function scheduleNotifs(ask) {
   clearTimeout(schedTimer);
   schedTimer = setTimeout(async () => {
@@ -1413,6 +1426,7 @@ function scheduleNotifs(ask) {
       let p = await LN.checkPermissions();
       if (p.display !== "granted" && ask) p = await LN.requestPermissions();
       if (p.display !== "granted") return;
+      try { if (LN.createChannel) await LN.createChannel({ id: "vazifa_v2", name: "Dars va uyga vazifa eslatmalari", description: "Darslar va uyga vazifa haqida ovozli eslatmalar", importance: 5, visibility: 1, vibration: true, lights: true, lightColor: "#C42847" }); } catch (e) {}
       const pend = await LN.getPending(); if (pend.notifications.length) await LN.cancel({ notifications: pend.notifications.map(n => ({ id: n.id })) });
       const t = todayYMD(), now = Date.now(), list = [];
       for (let i = 1; i <= 14; i++) {
@@ -1421,9 +1435,9 @@ function scheduleNotifs(ask) {
         const hws = S.homework.filter(h => h.due === d);
         const lines = ls.map(l => `${PARAS[l.p][0]} ${l.name} (${l.type}, ${l.room})`);
         hws.forEach(h => lines.push(`Vazifa · ${SUBJ[h.subject] || ""}: ${h.topic ? h.topic + " — " : ""}${h.text}`));
-        if (at.getTime() > now) list.push({ id: 1000 + i, title: hws.length ? `Ertaga ${ls.length} para · uyga vazifa bor!` : `Ertaga ${ls.length} para`, body: lines.join("\n"), largeBody: lines.join("\n"), schedule: { at, allowWhileIdle: true } });
-        if (hws.length) { const dd = d.split("-").map(Number); const am = new Date(dd[0], dd[1] - 1, dd[2], 7, 0);
-          if (am.getTime() > now) list.push({ id: 2000 + i, title: "Bugun dars · uyga vazifani unutmang", body: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), largeBody: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), schedule: { at: am, allowWhileIdle: true } }); }
+        if (at.getTime() > now) list.push({ id: 1000 + i, title: hws.length ? `Ertaga ${ls.length} para · uyga vazifa bor!` : `Ertaga ${ls.length} para`, body: lines.join("\n"), largeBody: lines.join("\n"), schedule: { at, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" });
+        if (hws.length) { const dd = d.split("-").map(Number); const am = new Date(dd[0], dd[1] - 1, dd[2], 8, 0);
+          if (am.getTime() > now) list.push({ id: 2000 + i, title: "Bugun dars · uyga vazifani unutmang", body: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), largeBody: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), schedule: { at: am, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" }); }
       }
       if (list.length) await LN.schedule({ notifications: list });
     } catch (e) {}
