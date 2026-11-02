@@ -206,6 +206,14 @@ p{margin:0}
 .bio-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:300px;color:var(--accent)}
 .bio-ic{color:var(--accent);margin:4px 0}
 .bio-ic svg{width:44px;height:44px}
+.bday{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#C42847,#8E1C38);color:#fff;border-radius:18px;padding:12px 14px;margin-bottom:10px;box-shadow:0 10px 22px -12px var(--accent)}
+.bday.today{animation:bdpulse 2s ease-in-out infinite}
+@keyframes bdpulse{0%,100%{box-shadow:0 10px 22px -12px var(--accent)}50%{box-shadow:0 10px 30px -8px var(--accent)}}
+.bday img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:2px solid rgba(255,255,255,.6)}
+.bday .bd-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bday .bd-l{font-size:12px;font-weight:800;opacity:.95;text-transform:uppercase;letter-spacing:.03em}
+.bday .bd-t b{font-size:16px;font-weight:800;line-height:1.2}
+.bday .bd-t small{font-size:12.5px;opacity:.9}
 /* form */
 form{display:flex;flex-direction:column;gap:14px;padding:18px}
 label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:700}
@@ -508,6 +516,7 @@ function viewSchedule(){
   }
   const first=list[0], last=list[list.length-1];
   $("#view").innerHTML=`
+    ${bdayBanner()}
     ${hwBanner()}
     ${hero}
     <div class="seg" role="group" aria-label="Hafta kuni">${DAYS.map(([full,short],i)=>`<button data-d="${i}" aria-pressed="${i===day}" class="${i===n.wd?"today":""}" aria-label="${full}">${short}<small>${LESSONS.filter(l=>l.d===i).length} para</small><span class="dot"></span></button>`).join("")}</div>
@@ -787,6 +796,17 @@ function hwLesson(h){ const wd=wdOf(h.due); return LESSONS.find(x=>x.key===h.sub
 const typeDat={"Ma'ruza":"ma'ruzasiga","Amaliy":"amaliy darsiga","Seminar":"seminariga"};
 function relDay(ymd){ const t=todayYMD(); return ymd===t?"Bugun":ymd===addDays(t,1)?"Ertaga":fmtDate(ymd); }
 function currentHw(key){ const t=todayYMD(); return S.homework.filter(h=>h.subject===key&&h.due>=t).sort((a,b)=>a.due.localeCompare(b.due)||(a.para||0)-(b.para||0)||(b.createdAt||"").localeCompare(a.createdAt||"")); }
+function birthdaysOn(ymd){ const [Y,M,D]=ymd.split("-");
+  return ROSTER.filter(r=>{ const p=(r.birth||"").split("."); return p[0]===D && p[1]===M; })
+    .map(r=>({ ...r, age: +Y - (+(r.birth.split(".")[2]||0)) })).sort((a,b)=>a.order-b.order); }
+function bdayBanner(){
+  const t=todayYMD(), tm=addDays(t,1);
+  const card=(r,today)=>`<div class="bday ${today?"today":""}">
+    <img src="${esc(r.photo)}" alt="" onerror="this.style.display='none'">
+    <div class="bd-t"><span class="bd-l">${today?"🎉 Bugun tug'ilgan kun!":"🎂 Ertaga tug'ilgan kun"}</span>
+      <b>${esc(r.name)}</b><small>${today?`Bugun ${r.age} yoshga to'ldi`:`Ertaga ${r.age} yoshga to'ladi`} · ${esc(r.birth)}</small></div></div>`;
+  return [...birthdaysOn(t).map(r=>card(r,true)), ...birthdaysOn(tm).map(r=>card(r,false))].join("");
+}
 function hwBanner(){
   const t=todayYMD(), tm=addDays(t,1); const n=nowTash();
   const items=S.homework.filter(h=>SUBJ[h.subject]&&(h.due===tm||h.due===t)).filter(h=>{
@@ -1247,7 +1267,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 13;
+const MIN_NATIVE_BUILD = 15;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
@@ -1438,6 +1458,14 @@ function scheduleNotifs(ask) {
         if (at.getTime() > now) list.push({ id: 1000 + i, title: hws.length ? `Ertaga ${ls.length} para · uyga vazifa bor!` : `Ertaga ${ls.length} para`, body: lines.join("\n"), largeBody: lines.join("\n"), schedule: { at, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" });
         if (hws.length) { const dd = d.split("-").map(Number); const am = new Date(dd[0], dd[1] - 1, dd[2], 8, 0);
           if (am.getTime() > now) list.push({ id: 2000 + i, title: "Bugun dars · uyga vazifani unutmang", body: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), largeBody: hws.map(h => `${SUBJ[h.subject] || ""}: ${h.text}`).join("\n"), schedule: { at: am, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" }); }
+      }
+      for (let i = 0; i <= 14; i++) {
+        const d = addDays(t, i), bs = birthdaysOn(d); if (!bs.length) continue;
+        const names = bs.map(b => b.name.split(" ").slice(0, 2).join(" ")).join(", ");
+        const prev = addDays(d, -1).split("-").map(Number); const ev = new Date(prev[0], prev[1] - 1, prev[2], 20, 0);
+        const dd = d.split("-").map(Number); const am = new Date(dd[0], dd[1] - 1, dd[2], 8, 0);
+        if (ev.getTime() > now) list.push({ id: 3000 + i, title: "🎂 Ertaga tug'ilgan kun", body: names + " ertaga tug'ilgan kunini nishonlaydi. Tabriklashni unutmang!", schedule: { at: ev, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" });
+        if (am.getTime() > now) list.push({ id: 4000 + i, title: "🎉 Bugun tug'ilgan kun!", body: names + "ni bugun tug'ilgan kuni bilan tabriklang!", schedule: { at: am, allowWhileIdle: true }, channelId: "vazifa_v2", smallIcon: "ic_stat_icon" });
       }
       if (list.length) await LN.schedule({ notifications: list });
     } catch (e) {}
