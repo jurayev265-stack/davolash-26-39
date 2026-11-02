@@ -1683,7 +1683,7 @@ function showAuth(msg, err) {
       if (authMode === "up") await FB.auth.createUserWithEmailAndPassword(em, pw);
       else await FB.auth.signInWithEmailAndPassword(em, pw);
     } catch (er) {
-      var m = { "auth/invalid-credential": "Email yoki parol notoʻgʻri.", "auth/wrong-password": "Parol notoʻgʻri.", "auth/user-not-found": "Bunday akkaunt yoʻq — roʻyxatdan oʻting.",
+      var m = { "auth/invalid-credential": authMode === "up" ? "Email yoki parol notoʻgʻri." : "Email yoki parol notoʻgʻri. Bu email bilan hali roʻyxatdan oʻtmagan boʻlsangiz, pastdagi «Akkauntim yoʻq — roʻyxatdan oʻtish» ni bosing. Parolni unutgan boʻlsangiz — «Parolni unutdim».", "auth/wrong-password": "Parol notoʻgʻri.", "auth/user-not-found": "Bunday akkaunt yoʻq — roʻyxatdan oʻting.",
         "auth/email-already-in-use": "Bu email bilan akkaunt bor — «Kirish»ni tanlang.", "auth/weak-password": "Parol kamida 6 belgidan iborat boʻlsin.", "auth/invalid-email": "Email notoʻgʻri yozilgan.",
         "auth/too-many-requests": "Juda koʻp urinish. Biroz kutib qayta urining.", "auth/network-request-failed": "Internet aloqasi yoʻq." }[er && er.code] || ("Xato: " + (er && er.message));
       $("authMsg").textContent = m; $("authMsg").className = "auth-msg err";
