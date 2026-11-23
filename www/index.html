@@ -219,6 +219,15 @@ p{margin:0}
 .bde-row:first-child{border-top:0}
 .bde-n{flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bde-d{flex:none;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:13px;font-family:var(--f-mono,inherit);background:var(--surface);color:var(--ink)}
+/* brand polish */
+.logo{position:relative}
+.pin-card .logo,.gate-card .logo{background:radial-gradient(120% 120% at 50% 0%,#fff 60%,#EAF1FB 100%);box-shadow:0 10px 26px -12px rgba(23,70,140,.45),0 2px 6px rgba(18,26,35,.08)}
+.pin-card .logo::after,.gate-card .logo::after{content:"";position:absolute;inset:0;border-radius:inherit;border:1.5px solid rgba(45,99,166,.14)}
+.wordmark{display:flex;flex-direction:column;align-items:center;gap:3px;margin:2px 0 2px}
+.wordmark b{font-size:19px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+.wordmark small{font-size:11.5px;font-weight:700;color:var(--vein);text-transform:uppercase;letter-spacing:.04em;max-width:260px;line-height:1.35;text-align:center}
+.uni-sub{font-size:11.5px;font-weight:700;color:var(--vein);text-transform:uppercase;letter-spacing:.04em;margin:-6px 0 2px;max-width:280px;line-height:1.35}
+.pin-card h2{margin-top:2px}
 /* form */
 form{display:flex;flex-direction:column;gap:14px;padding:18px}
 label{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:700}
@@ -1025,6 +1034,7 @@ function showGate(mode, msg) {
   gate.innerHTML = `<div class="gate-card">
     <div class="logo" aria-hidden="true"><img class="lg-img" src="icon.png" alt="TISU"></div>
     <h1>Davolash 26-39</h1>
+    <p class="uni-sub">Termiz iqtisodiyot va servis universiteti</p>
     <p class="lede">${mode === "register" ? "Ro'yxatdan o'tish. Admin tasdiqlagach, hamma bo'limlar ochiladi." : "Guruh ilovasiga kirish"}</p>
     <form id="gf">
       ${mode === "register" ? `<label for="g-name">Ismingiz<select id="g-name" required><option value="">Ro'yxatdan tanlang</option>${names}</select></label>` : ""}
@@ -1215,7 +1225,8 @@ function pinDraw(msg, bad) {
     return;
   }
   if (PIN.mode === "forgot") {
-    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div><h2>${t}</h2>
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div>
+      <div class="wordmark"><b>Davolash 26-39</b><small>Termiz iqtisodiyot va servis universiteti</small></div><h2>${t}</h2>
       <p class="lede">Hisobingizdan chiqasiz. Keyin email va parolingiz bilan qayta kirib, yangi PIN-kod o'rnatasiz.<br><br>Parolni ham unutgan bo'lsangiz, kirish oynasida <b>"Parolni unutdim"</b> ni bosing — Gmail'ingizga parolni tiklash havolasi keladi.</p>
       <button class="btn primary" id="pin-go">Davom etish</button><button class="btn ghost" id="pin-back">Orqaga</button></div>`;
     document.getElementById("pin-go").onclick = async () => { store.set("pin:" + PIN.uid, null); pinClose(); await signOut(auth); };
@@ -1224,6 +1235,7 @@ function pinDraw(msg, bad) {
   }
   const keys = ["1","2","3","4","5","6","7","8","9", PIN.mode === "unlock" ? "forgot" : "", "0", "del"];
   pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div>
+    <div class="wordmark"><b>Davolash 26-39</b><small>Termiz iqtisodiyot va servis universiteti</small></div>
     <h2>${t}</h2><p class="lede">${sub}</p>
     <div class="pin-dots ${bad ? "shake" : ""}">${[0,1,2,3].map(i => `<i class="${i < PIN.buf.length ? "on" : ""}"></i>`).join("")}</div>
     <p class="pin-msg ${bad ? "err" : ""}" role="status">${msg || ""}</p>
@@ -1276,7 +1288,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 18;
+const MIN_NATIVE_BUILD = 19;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
