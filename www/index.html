@@ -414,13 +414,13 @@ const LESSONS = [
  [0,4,"O'zbekistonning eng yangi tarixi","tarix","Seminar","PhD M. Jumayev","306-A"],
  [0,5,"Tibbiy biologiya. Umumiy genetika","bio","Amaliy","o'q. T. Kenjayeva","107-A"],
  [1,3,"Tibbiy biologiya. Umumiy genetika","bio","Ma'ruza","o'q. X. Aslanova","201-A"],
- [1,5,"Tibbiy kimyo","kim","Amaliy","PhD E. Safarova","310-A"],
+ [1,4,"Tibbiy kimyo","kim","Amaliy","PhD E. Safarova","108-S"],
  [2,2,"Tibbiyotda xorijiy til","til","Amaliy","o'q. S. Qodirova","307-A"],
  [2,3,"Odam anatomiyasi","anat","Amaliy","o'q. M. Xolmatov","108-S"],
- [3,4,"Tibbiyot kasbiga kirish","kasb","Amaliy","o'q. A. Usmonova","510-B"],
+ [3,4,"Tibbiyot kasbiga kirish","kasb","Amaliy","o'q. Z. Tillyayeva","510-B"],
  [3,5,"O'zbekistonning eng yangi tarixi","tarix","Ma'ruza","o'q. M. Raimov","201-A"],
  [4,2,"Odam anatomiyasi","anat","Ma'ruza","o'q. Gulshan Qurbonova","201-A"],
- [4,3,"Tibbiyot kasbiga kirish","kasb","Ma'ruza","o'q. A. Usmonova","202-A"]
+ [4,3,"Tibbiyot kasbiga kirish","kasb","Ma'ruza","o'q. Z. Tillyayeva","202-A"]
 ].map(([d,p,name,key,type,who,room])=>({d,p,name,key,type,who,room}));
 
 /* Toshkent vaqti */
@@ -1275,7 +1275,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 16;
+const MIN_NATIVE_BUILD = 17;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
