@@ -48,10 +48,11 @@ button{cursor:pointer}
 /* header */
 header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 6px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.logo{width:38px;height:38px;border-radius:12px;background:var(--accent);display:grid;place-items:center;flex:none;box-shadow:0 6px 16px -6px var(--accent)}
+.logo{width:38px;height:38px;border-radius:12px;background:#fff;box-shadow:0 1px 4px rgba(10,20,40,.14);overflow:hidden;display:grid;place-items:center;flex:none;box-shadow:0 6px 16px -6px var(--accent)}
 .logo svg{width:22px;height:22px}
 .logo .lg{display:flex;flex-direction:column;align-items:center;color:#fff;font-weight:900;font-size:12.5px;line-height:1;letter-spacing:-.02em}
 .logo .lg i{display:block;width:60%;height:1.5px;background:#fff;opacity:.8;margin:2px 0;border-radius:2px}
+.logo .lg-img{width:100%;height:100%;object-fit:contain;padding:2px;box-sizing:border-box}
 .gate-card .logo .lg{font-size:18px}
 .brand-t{display:flex;flex-direction:column;line-height:1.15;min-width:0}
 .brand-t b{font-weight:800;font-size:17px;letter-spacing:-.01em}
@@ -368,7 +369,7 @@ details.install ol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:
 
 <header><div class="wrap">
   <div class="brand">
-    <div class="logo" aria-hidden="true"><span class="lg">26<i></i>39</span></div>
+    <div class="logo" aria-hidden="true"><img class="lg-img" src="icon.png" alt="TISU"></div>
     <div class="brand-t"><b>Davolash 26-39</b><span id="who">Davolash ishi · 1-kurs</span></div>
   </div>
   <div class="datebox" id="datebox"></div>
@@ -1022,7 +1023,7 @@ function showGate(mode, msg) {
   gate.hidden = false;
   const names = ROSTER.slice().sort((a, b) => a.name.localeCompare(b.name)).map(r => `<option value="${r.id}">${esc(r.name)}</option>`).join("");
   gate.innerHTML = `<div class="gate-card">
-    <div class="logo" aria-hidden="true"><span class="lg">26<i></i>39</span></div>
+    <div class="logo" aria-hidden="true"><img class="lg-img" src="icon.png" alt="TISU"></div>
     <h1>Davolash 26-39</h1>
     <p class="lede">${mode === "register" ? "Ro'yxatdan o'tish. Admin tasdiqlagach, hamma bo'limlar ochiladi." : "Guruh ilovasiga kirish"}</p>
     <form id="gf">
@@ -1206,7 +1207,7 @@ function pinDraw(msg, bad) {
   const t = { unlock: "PIN-kodni kiriting", set: "4 xonali PIN-kod o'rnating", confirm: "PIN-kodni qayta kiriting", forgot: "PIN-kodni tiklash" }[PIN.mode];
   const sub = { unlock: "Ilovaga kirish uchun", set: "Har safar ilovaga kirishda so'raladi. Uni hech kimga aytmang.", confirm: "Tasdiqlash uchun yana bir marta", forgot: "" }[PIN.mode];
   if (PIN.mode === "askbio") {
-    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><div class="bio-ic">${BIO_SVG}</div><h2>${webBio() ? "Face ID / Touch ID bilan ochilsinmi?" : "Barmoq izi yoki yuz bilan ochilsinmi?"}</h2>
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div><div class="bio-ic">${BIO_SVG}</div><h2>${webBio() ? "Face ID / Touch ID bilan ochilsinmi?" : "Barmoq izi yoki yuz bilan ochilsinmi?"}</h2>
       <p class="lede">Har safar PIN-kod terish o'rniga barmoq izingiz yoki yuzingiz bilan ochasiz. PIN-kod ham ishlayveradi.</p>
       <button class="btn primary" id="bio-yes">Ha, yoqish</button><button class="btn ghost" id="bio-no">Keyinroq</button></div>`;
     document.getElementById("bio-yes").onclick = async () => { if (await bioVerify(true)) { store.set("bio:" + PIN.uid, true); pinClose(); } };
@@ -1214,7 +1215,7 @@ function pinDraw(msg, bad) {
     return;
   }
   if (PIN.mode === "forgot") {
-    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div><h2>${t}</h2>
+    pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div><h2>${t}</h2>
       <p class="lede">Hisobingizdan chiqasiz. Keyin email va parolingiz bilan qayta kirib, yangi PIN-kod o'rnatasiz.<br><br>Parolni ham unutgan bo'lsangiz, kirish oynasida <b>"Parolni unutdim"</b> ni bosing — Gmail'ingizga parolni tiklash havolasi keladi.</p>
       <button class="btn primary" id="pin-go">Davom etish</button><button class="btn ghost" id="pin-back">Orqaga</button></div>`;
     document.getElementById("pin-go").onclick = async () => { store.set("pin:" + PIN.uid, null); pinClose(); await signOut(auth); };
@@ -1222,7 +1223,7 @@ function pinDraw(msg, bad) {
     return;
   }
   const keys = ["1","2","3","4","5","6","7","8","9", PIN.mode === "unlock" ? "forgot" : "", "0", "del"];
-  pinBox.innerHTML = `<div class="pin-card"><div class="logo"><span class="lg">26<i></i>39</span></div>
+  pinBox.innerHTML = `<div class="pin-card"><div class="logo"><img class="lg-img" src="icon.png" alt="TISU"></div>
     <h2>${t}</h2><p class="lede">${sub}</p>
     <div class="pin-dots ${bad ? "shake" : ""}">${[0,1,2,3].map(i => `<i class="${i < PIN.buf.length ? "on" : ""}"></i>`).join("")}</div>
     <p class="pin-msg ${bad ? "err" : ""}" role="status">${msg || ""}</p>
@@ -1275,7 +1276,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 /* ---------- "Yangi versiya chiqdi" (faqat Android ilovada) ---------- */
-const MIN_NATIVE_BUILD = 17;
+const MIN_NATIVE_BUILD = 18;
 const APK_URL = "https://github.com/jurayev265-stack/davolash-26-39/releases/latest/download/Davolash-26-39.apk";
 (async () => {
   if (!isNative()) return;
